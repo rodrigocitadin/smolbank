@@ -7,6 +7,12 @@
 # General application configuration
 import Config
 
+config :cumbuca_challenge, CumbucaChallenge.Repo,
+  database: "dev_cumbuca_challenge",
+  username: "dev",
+  password: "dev",
+  hostname: "localhost"
+
 config :cumbuca_challenge,
   ecto_repos: [CumbucaChallenge.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]

@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :cumbuca_challenge, CumbucaChallenge.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "dev",
+  password: "dev",
   hostname: "localhost",
   database: "cumbuca_challenge_dev",
   stacktrace: true,
