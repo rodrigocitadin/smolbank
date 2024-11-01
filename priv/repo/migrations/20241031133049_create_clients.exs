@@ -10,5 +10,7 @@ defmodule CumbucaChallenge.Repo.Migrations.CreateClients do
 
       timestamps()
     end
+
+    create unique_index(:clients, [:cpf])
   end
 end
