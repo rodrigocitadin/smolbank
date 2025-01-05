@@ -1,9 +1,9 @@
-defmodule CumbucaChallenge.Client do
+defmodule CumbucaChallenge.Account do
   use CumbucaChallenge.Schema
 
-  @client_params [:name, :cpf, :password]
+  @account_params [:name, :cpf, :password]
 
-  schema "clients" do
+  schema "accounts" do
     field :name, :string
     field :cpf, :string
     field :password, :string
@@ -12,10 +12,10 @@ defmodule CumbucaChallenge.Client do
     timestamps()
   end
 
-  def changeset(client \\ %__MODULE__{}, params) do
-    client
-    |> Ecto.Changeset.cast(params, @client_params)
-    |> Ecto.Changeset.validate_required(@client_params)
+  def changeset(account \\ %__MODULE__{}, params) do
+    account
+    |> Ecto.Changeset.cast(params, @account_params)
+    |> Ecto.Changeset.validate_required(@account_params)
     |> Ecto.Changeset.validate_format(:cpf, ~r/^[[:digit:]]+$/)
     |> Ecto.Changeset.validate_length(:cpf, is: 11)
     |> Ecto.Changeset.validate_length(:password, min: 6)

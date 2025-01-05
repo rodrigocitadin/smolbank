@@ -42,7 +42,7 @@ defmodule CumbucaChallengeWeb do
         layouts: [html: CumbucaChallengeWeb.Layouts]
 
       import Plug.Conn
-      import CumbucaChallengeWeb.Gettext
+      # import CumbucaChallengeWeb.Gettext
 
       unquote(verified_routes())
     end
