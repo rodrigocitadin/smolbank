@@ -1,6 +1,8 @@
 defmodule CumbucaChallenge.Transaction do
   use CumbucaChallenge.Schema
 
+  alias CumbucaChallenge.Accounts.Account
+
   @transaction_params [:amount, :receiver_id, :sender_id]
   @transaction_status [:pending, :finished, :cancelled, :refunded]
 
@@ -8,8 +10,8 @@ defmodule CumbucaChallenge.Transaction do
     field :amount, :integer
     field :status, Ecto.Enum, values: @transaction_status, default: :pending
 
-    belongs_to :receiver, CumbucaChallenge.Account
-    belongs_to :sender, CumbucaChallenge.Account
+    belongs_to :receiver, Account
+    belongs_to :sender, Account
 
     timestamps()
   end

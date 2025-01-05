@@ -1,8 +1,9 @@
-defmodule CumbucaChallenge.Account do
+defmodule CumbucaChallenge.Accounts.Account do
   use CumbucaChallenge.Schema
 
   @account_params [:name, :cpf, :password]
 
+  @derive {Jason.Encoder, only: [:id, :name, :cpf]}
   schema "accounts" do
     field :name, :string
     field :cpf, :string
