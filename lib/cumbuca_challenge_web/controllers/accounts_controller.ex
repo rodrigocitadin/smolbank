@@ -4,6 +4,8 @@ defmodule CumbucaChallengeWeb.AccountsController do
   alias CumbucaChallenge.Accounts
   alias Accounts.Account
 
+  action_fallback CumbucaChallengeWeb.FallbackController
+
   def create(conn, params) do
     with {:ok, %Account{} = account} <- Accounts.create(params) do
       conn
