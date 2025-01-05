@@ -7,15 +7,12 @@ defmodule CumbucaChallenge.Client do
     field :name, :string
     field :cpf, :string
     field :password, :string
-    field :balance, :integer, default: 0
+    field :balance, :integer, default: 100
 
     timestamps()
   end
 
-  def changeset(params), do: create_changeset(%__MODULE__{}, params)
-  def changeset(client, params), do: create_changeset(client, params)
-
-  def create_changeset(client, params) do
+  def changeset(client \\ %__MODULE__{}, params) do
     client
     |> Ecto.Changeset.cast(params, @client_params)
     |> Ecto.Changeset.validate_required(@client_params)
