@@ -25,7 +25,19 @@ defmodule CumbucaChallengeWeb.ErrorJSON do
     }
   end
 
-  def error(%{changeset: changeset}) do
+  def error(%{errors: :unauthorized}) do
+    %{
+      message: "Invalid authentication"
+    }
+  end
+
+  def error(%{errors: :bad_request}) do
+    %{
+      message: "Invalid request"
+    }
+  end
+
+  def error(%{errors: changeset}) do
     %{
       message: "Invalid params",
       errors: Ecto.Changeset.traverse_errors(changeset, &translate_errors/1)

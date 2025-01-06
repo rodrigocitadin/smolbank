@@ -9,6 +9,7 @@ defmodule CumbucaChallengeWeb.Router do
     pipe_through :api
 
     post "/accounts", AccountsController, :create
+    post "/accounts/auth", AccountsController, :auth
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
