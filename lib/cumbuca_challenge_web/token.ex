@@ -4,7 +4,7 @@ defmodule CumbucaChallengeWeb.Token do
 
   @sign_salt "dev"
 
-  def sign(account), do: Token.sign(Endpoint, @sign_salt, account_id: account.id)
+  def sign(account), do: Token.sign(Endpoint, @sign_salt, account.id)
 
   def verify(token), do: Token.verify(Endpoint, @sign_salt, token)
 end
