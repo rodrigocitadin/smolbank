@@ -5,11 +5,21 @@ defmodule CumbucaChallengeWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug CumbucaChallengeWeb.Auth
+  end
+
   scope "/api", CumbucaChallengeWeb do
     pipe_through :api
 
     post "/accounts", AccountsController, :create
     post "/accounts/auth", AccountsController, :auth
+
+    scope "/accounts" do
+      pipe_through :auth
+
+      resources "/", AccountsController, except: [:new, :create, :edit]
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
