@@ -14,12 +14,15 @@ defmodule CumbucaChallengeWeb.Router do
 
     post "/accounts", AccountsController, :create
     post "/accounts/auth", AccountsController, :auth
+    get "/accounts/all", AccountsController, :all
 
     scope "/accounts" do
       pipe_through :auth
 
-      resources "/", AccountsController, except: [:new, :create, :edit]
-      get "/cpf/:cpf", AccountsController, :show_cpf
+      get "/", AccountsController, :index
+      patch "/", AccountsController, :update
+      put "/", AccountsController, :update
+      delete "/", AccountsController, :delete
     end
   end
 

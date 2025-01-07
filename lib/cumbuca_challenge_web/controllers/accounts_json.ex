@@ -13,14 +13,14 @@ defmodule CumbucaChallengeWeb.AccountsJSON do
     }
   end
 
-  def show(%{account: account}) do
+  def index(%{account: account}) do
     %{
       message: "Account found",
       data: account
     }
   end
 
-  def index(%{accounts: accounts}) do
+  def all(%{accounts: accounts}) do
     %{
       message: "All accounts found",
       data: accounts
