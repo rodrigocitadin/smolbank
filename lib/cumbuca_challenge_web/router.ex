@@ -23,6 +23,8 @@ defmodule CumbucaChallengeWeb.Router do
       patch "/", AccountsController, :update
       put "/", AccountsController, :update
       delete "/", AccountsController, :delete
+
+      post "/transactions", TransactionsController, :create
     end
   end
 

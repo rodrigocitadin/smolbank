@@ -1,4 +1,4 @@
-defmodule CumbucaChallenge.Transaction do
+defmodule CumbucaChallenge.Transactions.Transaction do
   use CumbucaChallenge.Schema
 
   alias CumbucaChallenge.Accounts.Account
@@ -6,8 +6,9 @@ defmodule CumbucaChallenge.Transaction do
   @transaction_params [:amount, :receiver_id, :sender_id]
   @transaction_status [:pending, :finished, :cancelled, :refunded]
 
+  @derive {Jason.Encoder, only: [:id, :amount, :receiver, :sender]}
   schema "transactions" do
-    field :amount, :integer
+    field :amount, :decimal
     field :status, Ecto.Enum, values: @transaction_status, default: :pending
 
     belongs_to :receiver, Account
