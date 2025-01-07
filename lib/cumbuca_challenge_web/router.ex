@@ -19,6 +19,7 @@ defmodule CumbucaChallengeWeb.Router do
       pipe_through :auth
 
       resources "/", AccountsController, except: [:new, :create, :edit]
+      get "/cpf/:cpf", AccountsController, :show_cpf
     end
   end
 

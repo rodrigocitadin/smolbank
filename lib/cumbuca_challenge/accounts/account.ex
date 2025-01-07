@@ -3,7 +3,7 @@ defmodule CumbucaChallenge.Accounts.Account do
 
   @account_params [:name, :cpf, :password]
 
-  @derive {Jason.Encoder, only: [:id, :name, :cpf]}
+  @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance]}
   schema "accounts" do
     field :name, :string
     field :cpf, :string
