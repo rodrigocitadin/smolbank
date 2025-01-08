@@ -8,7 +8,7 @@ defmodule CumbucaChallenge.Accounts do
   alias CumbucaChallenge.Accounts.Verify
 
   defdelegate create(params), to: Create, as: :call
-  defdelegate get(id), to: Get, as: :call
+  defdelegate get(id, opts \\ []), to: Get, as: :call
   defdelegate get_by_cpf(cpf), to: GetByCpf, as: :call
   defdelegate get_all(), to: GetAll, as: :call
   defdelegate verify(params), to: Verify, as: :call

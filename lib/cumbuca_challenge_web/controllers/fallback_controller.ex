@@ -1,6 +1,13 @@
 defmodule CumbucaChallengeWeb.FallbackController do
   use CumbucaChallengeWeb, :controller
 
+  def call(conn, {:error, :deadlock_detected}) do
+    conn
+    |> put_status(:conflict)
+    |> put_view(json: CumbucaChallengeWeb.ErrorJSON)
+    |> render(:error, errors: :deadlock)
+  end
+
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)

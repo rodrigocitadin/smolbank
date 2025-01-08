@@ -11,7 +11,9 @@ config :cumbuca_challenge, CumbucaChallenge.Repo,
   database: "dev_cumbuca_challenge",
   username: "dev",
   password: "dev",
-  hostname: "localhost"
+  hostname: "localhost",
+  timout: 10_000,
+  ownership_timeout: 15_000
 
 config :cumbuca_challenge,
   ecto_repos: [CumbucaChallenge.Repo],

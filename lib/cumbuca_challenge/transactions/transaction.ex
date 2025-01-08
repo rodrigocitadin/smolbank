@@ -6,7 +6,7 @@ defmodule CumbucaChallenge.Transactions.Transaction do
   @transaction_params [:amount, :receiver_id, :sender_id]
   @transaction_status [:pending, :finished, :cancelled, :refunded]
 
-  @derive {Jason.Encoder, only: [:id, :amount, :receiver, :sender]}
+  @derive {Jason.Encoder, only: [:id, :amount, :sender, :receiver]}
   schema "transactions" do
     field :amount, :decimal
     field :status, Ecto.Enum, values: @transaction_status, default: :pending

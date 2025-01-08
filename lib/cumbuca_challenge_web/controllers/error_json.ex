@@ -19,6 +19,12 @@ defmodule CumbucaChallengeWeb.ErrorJSON do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end
 
+  def error(%{errors: :deadlock}) do
+    %{
+      message: "A deadlock occurred while processing your request. Please try again."
+    }
+  end
+
   def error(%{errors: :not_found}) do
     %{
       message: "Data not found"

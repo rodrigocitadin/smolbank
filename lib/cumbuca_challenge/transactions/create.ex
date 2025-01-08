@@ -6,15 +6,18 @@ defmodule CumbucaChallenge.Transactions.Create do
   alias Ecto.Multi
 
   def call(%{"sender_id" => sender_id, "receiver_id" => receiver_id, "amount" => amount} = params) do
-    with {:ok, sender} <- Accounts.get(sender_id),
+    with true <- sender_id !== receiver_id,
          {:ok, receiver} <- Accounts.get(receiver_id),
-         {:ok, amount} <- Decimal.cast(amount) do
+         {:ok, amount} <- Decimal.cast(amount),
+         {:ok, sender} <- Accounts.get(sender_id, lock: "FOR UPDATE") do
       Multi.new()
       |> withdraw(sender, amount)
       |> deposit(receiver, amount)
       |> create(params)
       |> Repo.transaction()
       |> preload_assocs()
+    else
+      false -> {:error, :bad_request}
     end
   end
 
