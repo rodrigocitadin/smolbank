@@ -23,5 +23,5 @@ erl_crash.dump
 /tmp/
 
 # Ignore package tarball (built via "mix hex.build").
-cumbuca_challenge-*.tar
+smolbank-*.tar
 

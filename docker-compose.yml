@@ -1,11 +1,11 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: cumbuca_challenge 
+    container_name: smolbank 
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-      POSTGRES_DB: cumbuca_challenge_dev
+      POSTGRES_DB: smolbank_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

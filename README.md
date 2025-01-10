@@ -1,4 +1,4 @@
-# CumbucaChallenge
+# Smolbank
 
 To start your Phoenix server:
 

@@ -1,4 +1,4 @@
-defmodule CumbucaChallengeWeb.ConnCase do
+defmodule SmolbankWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule CumbucaChallengeWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use CumbucaChallengeWeb.ConnCase, async: true`, although
+  by setting `use SmolbankWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -20,19 +20,19 @@ defmodule CumbucaChallengeWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint CumbucaChallengeWeb.Endpoint
+      @endpoint SmolbankWeb.Endpoint
 
-      use CumbucaChallengeWeb, :verified_routes
+      use SmolbankWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import CumbucaChallengeWeb.ConnCase
+      import SmolbankWeb.ConnCase
     end
   end
 
   setup tags do
-    CumbucaChallenge.DataCase.setup_sandbox(tags)
+    Smolbank.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

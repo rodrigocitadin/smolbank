@@ -1,4 +1,4 @@
-defmodule CumbucaChallenge.Repo.Migrations.AddTransactionStatusEnum do
+defmodule Smolbank.Repo.Migrations.AddTransactionStatusEnum do
   use Ecto.Migration
 
   def up do

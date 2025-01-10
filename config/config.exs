@@ -7,27 +7,27 @@
 # General application configuration
 import Config
 
-config :cumbuca_challenge, CumbucaChallenge.Repo,
-  database: "dev_cumbuca_challenge",
+config :smolbank, Smolbank.Repo,
+  database: "dev_smolbank",
   username: "dev",
   password: "dev",
   hostname: "localhost",
   timout: 10_000,
   ownership_timeout: 15_000
 
-config :cumbuca_challenge,
-  ecto_repos: [CumbucaChallenge.Repo],
+config :smolbank,
+  ecto_repos: [Smolbank.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Configures the endpoint
-config :cumbuca_challenge, CumbucaChallengeWeb.Endpoint,
+config :smolbank, SmolbankWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [json: CumbucaChallengeWeb.ErrorJSON],
+    formats: [json: SmolbankWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: CumbucaChallenge.PubSub,
+  pubsub_server: Smolbank.PubSub,
   live_view: [signing_salt: "o3myXDaX"]
 
 # Configures the mailer
@@ -37,7 +37,7 @@ config :cumbuca_challenge, CumbucaChallengeWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :cumbuca_challenge, CumbucaChallenge.Mailer, adapter: Swoosh.Adapters.Local
+config :smolbank, Smolbank.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures Elixir's Logger
 config :logger, :console,

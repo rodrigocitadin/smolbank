@@ -1,4 +1,4 @@
-defmodule CumbucaChallenge.Repo.Migrations.AddTransactionsTable do
+defmodule Smolbank.Repo.Migrations.AddTransactionsTable do
   use Ecto.Migration
 
   def change do
