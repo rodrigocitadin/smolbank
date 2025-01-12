@@ -3,7 +3,7 @@ defmodule Smolbank.Repo.Migrations.AddTransactionStatusEnum do
 
   def up do
     execute(
-      "CREATE TYPE transaction_status AS ENUM ('pending', 'finished', 'cancelled','refunded')"
+      "CREATE TYPE transaction_status AS ENUM ('pending', 'finished', 'cancelled', 'revoked')"
     )
   end
 

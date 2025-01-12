@@ -6,12 +6,13 @@ defmodule Smolbank.Accounts.Account do
   @account_params [:name, :cpf, :password]
   @account_update_params [:balance | @account_params]
 
-  @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance]}
+  @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance, :debt]}
   schema "accounts" do
     field :name, :string
     field :cpf, :string
     field :password, :string
     field :balance, :decimal, default: 100
+    field :debt, :decimal, default: 0
 
     has_many :sent_transactions, Transaction, foreign_key: :sender_id
     has_many :received_transactions, Transaction, foreign_key: :receiver_id
@@ -37,6 +38,8 @@ defmodule Smolbank.Accounts.Account do
     |> Ecto.Changeset.validate_format(:cpf, ~r/^[[:digit:]]+$/)
     |> Ecto.Changeset.validate_length(:cpf, is: 11)
     |> Ecto.Changeset.validate_length(:password, min: 6)
+    |> Ecto.Changeset.validate_number(:balance, greater_than_or_equal_to: 0)
+    |> Ecto.Changeset.validate_number(:debt, lesser_than_or_equal_to: 0)
     |> Ecto.Changeset.unique_constraint(:cpf)
     |> put_password_hash()
   end

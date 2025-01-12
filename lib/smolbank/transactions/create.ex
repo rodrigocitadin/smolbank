@@ -43,7 +43,10 @@ defmodule Smolbank.Transactions.Create do
     Multi.update(multi, :deposit, updated_changeset)
   end
 
-  defp create(multi, params), do: Multi.insert(multi, :transaction, Transaction.changeset(params))
+  defp create(multi, params) do
+    params = Map.put(params, "status", :finished)
+    Multi.insert(multi, :transaction, Transaction.changeset(%Transaction{}, params))
+  end
 
   defp preload_assocs({:ok, %{transaction: transaction}}) do
     result =
