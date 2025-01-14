@@ -5,4 +5,11 @@ defmodule SmolbankWeb.TransactionsJSON do
       data: transaction
     }
   end
+
+  def refund(%{transaction: transaction}) do
+    %{
+      message: "Transaction refund successfully",
+      data: transaction
+    }
+  end
 end

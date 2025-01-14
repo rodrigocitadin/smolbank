@@ -15,6 +15,6 @@ defmodule Smolbank.Repo.Migrations.AddAccountsTable do
 
     create unique_index(:accounts, [:cpf])
     create constraint(:accounts, :balance_must_be_positive, check: "balance >= 0")
-    create constraint(:accounts, :debt_must_be_negative, check: "balance >= 0")
+    create constraint(:accounts, :debt_must_be_positive, check: "debt >= 0")
   end
 end

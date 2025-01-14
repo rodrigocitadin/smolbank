@@ -4,7 +4,7 @@ defmodule Smolbank.Accounts.Account do
   alias Smolbank.Transactions.Transaction
 
   @account_params [:name, :cpf, :password]
-  @account_update_params [:balance | @account_params]
+  @account_update_params [:balance, :debt | @account_params]
 
   @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance, :debt]}
   schema "accounts" do
@@ -39,7 +39,7 @@ defmodule Smolbank.Accounts.Account do
     |> Ecto.Changeset.validate_length(:cpf, is: 11)
     |> Ecto.Changeset.validate_length(:password, min: 6)
     |> Ecto.Changeset.validate_number(:balance, greater_than_or_equal_to: 0)
-    |> Ecto.Changeset.validate_number(:debt, lesser_than_or_equal_to: 0)
+    |> Ecto.Changeset.validate_number(:debt, greater_than_or_equal_to: 0)
     |> Ecto.Changeset.unique_constraint(:cpf)
     |> put_password_hash()
   end

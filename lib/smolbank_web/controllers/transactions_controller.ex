@@ -14,4 +14,14 @@ defmodule SmolbankWeb.TransactionsController do
       |> render(:created, transaction: transaction)
     end
   end
+
+  def refund(conn, %{"transaction_id" => transaction_id}) do
+    account_id = conn.assigns[:account_id]
+
+    with {:ok, transaction} <- Transactions.refund(transaction_id, account_id) do
+      conn
+      |> put_status(:ok)
+      |> render(:refund, transaction: transaction)
+    end
+  end
 end
