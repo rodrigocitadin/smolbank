@@ -9,6 +9,7 @@ defmodule Smolbank.Transactions.Refund do
   def call(transaction_id, sender_id) do
     with {:ok, %Transaction{} = transaction} <- Transactions.get(transaction_id),
          true <- correct_owner?(transaction, sender_id),
+         true <- valid_refund?(transaction),
          {:ok, %Account{} = sender} <- Accounts.get(sender_id, lock: "FOR UPDATE"),
          {:ok, %Account{} = receiver} <- Accounts.get(transaction.receiver_id) do
       Multi.new()
@@ -17,10 +18,13 @@ defmodule Smolbank.Transactions.Refund do
       |> update(transaction_id)
       |> Repo.transaction()
       |> preload_assocs()
+    else
+      false -> {:error, :bad_request}
     end
   end
 
   defp correct_owner?(%Transaction{sender_id: sender_id}, owner_id), do: sender_id === owner_id
+  defp valid_refund?(%Transaction{status: status}), do: status !== :refunded
 
   defp withdraw(multi, %Account{} = account, amount) do
     updated_changeset = Account.changeset(account, %{debt: amount})
