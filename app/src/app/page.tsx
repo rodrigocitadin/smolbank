@@ -7,6 +7,13 @@ type Action = {
   text: string
 }
 
+type Transaction = {
+  username: string
+  amount: number
+  date: Date
+  kind: 'Sent' | 'Received' | 'Refunded'
+}
+
 export default function Home() {
   const actions: Action[] = [
     {
@@ -21,6 +28,8 @@ export default function Home() {
     },
   ]
 
+  const date = new Date
+
   return (
     <>
       <div className="mx-4 my-8">
@@ -34,6 +43,50 @@ export default function Home() {
         </section>
         <section className="flex flex-col gap-2 my-8">
           {actions.map(action => <ActionButton key={action.id} action={action} />)}
+        </section>
+        <section>
+          {/* <div className="sticky top-0 bg-zinc-900"> */}
+          {/*   <input /> */}
+          {/* </div> */}
+          <TransactionCard
+            username="Marquito"
+            amount={100}
+            date={date}
+            kind="Sent"
+          />
+          <TransactionCard
+            username="Luizinho"
+            amount={10}
+            date={date}
+            kind="Received"
+          />
+          <TransactionCard
+            username="Rodolfo"
+            amount={500}
+            date={date}
+            kind="Refunded"
+          />
+          <TransactionCard
+            username="Marquito"
+            amount={100}
+            date={date}
+            kind="Sent"
+          />
+          <TransactionCard
+            username="Luizinho"
+            amount={10}
+            date={date}
+            kind="Received"
+          />
+          <TransactionCard
+            username="Rodolfo"
+            amount={500}
+            date={date}
+            kind="Refunded"
+          />
+          <button className="block mx-auto my-4">
+            Load more
+          </button>
         </section>
       </main>
     </>
@@ -52,9 +105,21 @@ function MoneyCard({ text, amount, negative }: { text: string, amount: number, n
 function ActionButton({ action }: { action: Action }) {
   return (
     <div className="flex items-center gap-2">
-      <Image src={action.icon} alt={action.text} />
+      <Image src={action.icon} alt={action.text} width={25} height={25} />
       <span>{action.text}</span>
-      {/* {action.text.split(" ").map(text => <span key={text}>{text}</span>)} */}
+    </div>
+  )
+}
+
+function TransactionCard(transaction: Transaction) {
+  return (
+    <div className="my-4 p-4 flex flex-col bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md shadow-md">
+      <div className="flex justify-between text-sm text-zinc-500">
+        <small>{transaction.kind}</small>
+        <small>{transaction.date.toISOString()}</small>
+      </div>
+      <span className="text-zinc-700">{transaction.username}</span>
+      <strong className="text-xl">{transaction.amount.toFixed(2)} $</strong>
     </div>
   )
 }
