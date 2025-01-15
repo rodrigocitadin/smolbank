@@ -6,7 +6,7 @@ defmodule Smolbank.Accounts.Account do
   @account_params [:name, :cpf, :password]
   @account_update_params [:balance, :debt | @account_params]
 
-  @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance, :debt]}
+  @derive {Jason.Encoder, only: [:id, :name, :cpf, :balance, :debt, :updated_at, :inserted_at]}
   schema "accounts" do
     field :name, :string
     field :cpf, :string

@@ -7,7 +7,8 @@ defmodule Smolbank.Transactions.Transaction do
   @transaction_status [:pending, :finished, :cancelled, :refunded]
   @transaction_update_params [:status | @transaction_params]
 
-  @derive {Jason.Encoder, only: [:id, :amount, :sender, :receiver, :status]}
+  @derive {Jason.Encoder,
+           only: [:id, :amount, :sender, :receiver, :status, :updated_at, :inserted_at]}
   schema "transactions" do
     field :amount, :decimal
     field :status, Ecto.Enum, values: @transaction_status, default: :pending
