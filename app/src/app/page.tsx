@@ -1,4 +1,5 @@
 import { PayDebtsIcon, SendTransactionIcon } from "@/assets";
+import { format } from "date-fns";
 import Image from "next/image";
 
 type Action = {
@@ -97,7 +98,7 @@ function MoneyCard({ text, amount, negative }: { text: string, amount: number, n
   return (
     <div className="flex justify-between text-xl">
       <p>{text}</p>
-      <strong className={negative ? "text-red-500" : ""}>{amount.toFixed(2)} $</strong>
+      <strong className={negative && amount > 0 ? "text-red-500" : ""}>{amount.toFixed(2)} $</strong>
     </div>
   )
 }
@@ -116,7 +117,7 @@ function TransactionCard(transaction: Transaction) {
     <div className="my-4 p-4 flex flex-col bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md shadow-md">
       <div className="flex justify-between text-sm text-zinc-500">
         <small>{transaction.kind}</small>
-        <small>{transaction.date.toISOString()}</small>
+        <small>{format(transaction.date, "dd MMM, yyyy 'at' hh:mm a")}</small>
       </div>
       <span className="text-zinc-700">{transaction.username}</span>
       <strong className="text-xl">{transaction.amount.toFixed(2)} $</strong>
