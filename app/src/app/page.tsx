@@ -32,22 +32,22 @@ export default function Home() {
 
   return (
     <>
-      <div className="mx-4 my-8">
+      <header className="my-8">
         <h1 className="text-4xl">Hi, Rodrigo!</h1>
         <h2 className="text-2xl">How are your finances today?</h2>
-      </div>
-      <main className="mx-4">
-        <section>
-          <MoneyCard text="Balance:" amount={100} />
-          <MoneyCard text="Debt:" amount={50} negative />
+      </header>
+      <main>
+        <section className="py-8 border-y border-y-zinc-200">
+          <div>
+            <MoneyCard text="Balance:" amount={100} />
+            <MoneyCard text="Debt:" amount={50} negative />
+          </div>
+          <div className="flex gap-2 mt-4">
+            {actions.map(action => <ActionButton key={action.id} action={action} />)}
+          </div>
         </section>
-        <section className="flex flex-col gap-2 my-8">
-          {actions.map(action => <ActionButton key={action.id} action={action} />)}
-        </section>
-        <section>
-          {/* <div className="sticky top-0 bg-zinc-900"> */}
-          {/*   <input /> */}
-          {/* </div> */}
+        <section className="mt-8">
+          <h2 className="text-xl">Your transactions</h2>
           <TransactionCard
             username="Marquito"
             amount={100}
@@ -104,10 +104,10 @@ function MoneyCard({ text, amount, negative }: { text: string, amount: number, n
 
 function ActionButton({ action }: { action: Action }) {
   return (
-    <div className="flex items-center gap-2">
+    <button className="flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md shadow-md p-4">
       <Image src={action.icon} alt={action.text} width={25} height={25} />
       <span>{action.text}</span>
-    </div>
+    </button>
   )
 }
 
