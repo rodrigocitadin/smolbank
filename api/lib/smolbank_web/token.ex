@@ -6,5 +6,5 @@ defmodule SmolbankWeb.Token do
 
   def sign(account), do: Token.sign(Endpoint, @sign_salt, account.id)
 
-  def verify(token), do: Token.verify(Endpoint, @sign_salt, token)
+  def verify(token), do: Token.verify(Endpoint, @sign_salt, token, :infinity)
 end
