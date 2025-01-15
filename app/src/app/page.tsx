@@ -1,6 +1,8 @@
 import { PayDebtsIcon, SendTransactionIcon } from "@/assets";
 import { format } from "date-fns";
 import Image from "next/image";
+import { axios } from "@/app/lib";
+import { UUID } from "crypto";
 
 type Action = {
   id: number
@@ -8,14 +10,43 @@ type Action = {
   text: string
 }
 
-type Transaction = {
-  username: string
-  amount: number
-  date: Date
-  kind: 'Sent' | 'Received' | 'Refunded'
+type TransactionStatus =
+  | 'pending'
+  | 'finished'
+  | 'cancelled'
+  | 'refunded'
+
+type Timestamps = {
+  updated_at: Date
+  inserted_at: Date
 }
 
-export default function Home() {
+type Transaction = {
+  id: UUID
+  amount: string
+  sender: Account,
+  receiver: Account
+  status: TransactionStatus
+} & Timestamps
+
+type Account = {
+  id: UUID
+  name: string
+  balance: number
+  debt: number
+  cpf: string
+} & Timestamps
+
+export default async function Home() {
+  let { data: { data: account } } =
+    await axios.get<{ message: string, data: Account }>("/accounts")
+
+  let { data: { data: transactions } } =
+    await axios.get<{ message: string, data: Transaction[] }>("/accounts/transactions")
+
+  console.log(account)
+  console.log(transactions)
+
   const actions: Action[] = [
     {
       id: 1,
@@ -29,65 +60,43 @@ export default function Home() {
     },
   ]
 
-  const date = new Date
-
   return (
     <>
       <header className="my-8">
-        <h1 className="text-4xl">Hi, Rodrigo!</h1>
+        <h1 className="text-4xl">Hi, {capitalizeFirstChar(account.name)}!</h1>
         <h2 className="text-2xl">How are your finances today?</h2>
       </header>
       <main>
         <section className="py-8 border-y border-y-zinc-200">
           <div>
-            <MoneyCard text="Balance:" amount={100} />
-            <MoneyCard text="Debt:" amount={50} negative />
+            <MoneyCard text="Balance:" amount={Number(account.balance)} />
+            <MoneyCard text="Debt:" amount={Number(account.debt)} negative />
           </div>
           <div className="flex gap-2 mt-4">
-            {actions.map(action => <ActionButton key={action.id} action={action} />)}
+            {actions.map(action => <ActionButton key={action.id} {...action} />)}
           </div>
         </section>
-        <section className="mt-8">
-          <h2 className="text-xl">Your transactions</h2>
-          <TransactionCard
-            username="Marquito"
-            amount={100}
-            date={date}
-            kind="Sent"
-          />
-          <TransactionCard
-            username="Luizinho"
-            amount={10}
-            date={date}
-            kind="Received"
-          />
-          <TransactionCard
-            username="Rodolfo"
-            amount={500}
-            date={date}
-            kind="Refunded"
-          />
-          <TransactionCard
-            username="Marquito"
-            amount={100}
-            date={date}
-            kind="Sent"
-          />
-          <TransactionCard
-            username="Luizinho"
-            amount={10}
-            date={date}
-            kind="Received"
-          />
-          <TransactionCard
-            username="Rodolfo"
-            amount={500}
-            date={date}
-            kind="Refunded"
-          />
-          <button className="block mx-auto my-4">
-            Load more
-          </button>
+        <section className="my-8">
+          <h2 className="text-xl mb-4">Your transactions</h2>
+          {transactions
+            ? (
+              <>
+                {transactions.map(transaction =>
+                  <TransactionCard
+                    key={transaction.id}
+                    transaction={transaction}
+                    account={account}
+                  />
+                )}
+                <button className="block mx-auto">
+                  Load more
+                </button>
+              </>
+            )
+            : (
+              <p className="text-zinc-500">You haven't any transactions yet :(</p>
+            )
+          }
         </section>
       </main>
     </>
@@ -103,7 +112,7 @@ function MoneyCard({ text, amount, negative }: { text: string, amount: number, n
   )
 }
 
-function ActionButton({ action }: { action: Action }) {
+function ActionButton(action: Action) {
   return (
     <button className="flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md shadow-md p-4">
       <Image src={action.icon} alt={action.text} width={25} height={25} />
@@ -112,15 +121,29 @@ function ActionButton({ action }: { action: Action }) {
   )
 }
 
-function TransactionCard(transaction: Transaction) {
+function TransactionCard({ transaction, account }: { transaction: Transaction, account: Account }) {
+  const isSender = transaction.sender.id === account.id
+  const kind = isSender && transaction.status === 'finished' ? 'Sent' : 'Received'
+
   return (
     <div className="my-4 p-4 flex flex-col bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md shadow-md">
       <div className="flex justify-between text-sm text-zinc-500">
-        <small>{transaction.kind}</small>
-        <small>{format(transaction.date, "dd MMM, yyyy 'at' hh:mm a")}</small>
+        <small>
+          {transaction.status === 'finished' ? kind : capitalizeFirstChar(transaction.status)
+          }
+        </small>
+        <small>{format(transaction.updated_at, "dd MMM, yyyy 'at' hh:mm a")}</small>
       </div>
-      <span className="text-zinc-700">{transaction.username}</span>
-      <strong className="text-xl">{transaction.amount.toFixed(2)} $</strong>
+      <span className="text-zinc-700">
+        {capitalizeFirstChar(isSender ? transaction.receiver.name : transaction.sender.name)}
+      </span>
+      <strong className="text-xl">{Number(transaction.amount).toFixed(2)} $</strong>
     </div>
   )
+}
+
+function capitalizeFirstChar(value: string) {
+  return value.length >= 2
+    ? value[0].toUpperCase() + value.slice(1)
+    : value.toUpperCase()
 }
