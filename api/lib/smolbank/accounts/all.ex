@@ -1,4 +1,4 @@
-defmodule Smolbank.Accounts.GetAll do
+defmodule Smolbank.Accounts.All do
   alias Smolbank.Accounts.Account
   alias Smolbank.Repo
 

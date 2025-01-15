@@ -57,7 +57,7 @@ defmodule SmolbankWeb.AccountsController do
   end
 
   def all(conn, _params) do
-    accounts = Accounts.get_all()
+    accounts = Accounts.all()
 
     conn
     |> put_status(:ok)
