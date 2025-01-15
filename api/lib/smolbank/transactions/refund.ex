@@ -45,10 +45,7 @@ defmodule Smolbank.Transactions.Refund do
   end
 
   defp preload_assocs({:ok, %{transaction: transaction}}) do
-    result =
-      transaction
-      |> Repo.preload(:sender)
-      |> Repo.preload(:receiver)
+    result = Repo.preload(transaction, [:sender, :receiver])
 
     {:ok, result}
   end

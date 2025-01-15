@@ -12,4 +12,11 @@ defmodule SmolbankWeb.TransactionsJSON do
       data: transaction
     }
   end
+
+  def all(%{transactions: transactions}) do
+    %{
+      message: "All transactions found with given id",
+      data: transactions
+    }
+  end
 end
