@@ -1,10 +1,7 @@
 defmodule SmolbankWeb.Token do
-  alias SmolbankWeb.Endpoint
-  alias Phoenix.Token
+  alias Smolbank.Guardian
 
-  @sign_salt "dev"
+  def sign(account), do: Guardian.encode_and_sign(account)
 
-  def sign(account), do: Token.sign(Endpoint, @sign_salt, account.id)
-
-  def verify(token), do: Token.verify(Endpoint, @sign_salt, token, max_age: :infinity)
+  def verify(token), do: Guardian.decode_and_verify(token)
 end

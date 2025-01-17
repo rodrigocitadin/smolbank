@@ -5,8 +5,8 @@ defmodule SmolbankWeb.Auth do
 
   def call(conn, _opts) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, data} <- SmolbankWeb.Token.verify(token) do
-      assign(conn, :account_id, data)
+         {:ok, claims} <- SmolbankWeb.Token.verify(token) do
+      assign(conn, :account_id, claims["sub"])
     else
       _error ->
         conn

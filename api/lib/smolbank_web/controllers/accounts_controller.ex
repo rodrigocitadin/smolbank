@@ -16,9 +16,8 @@ defmodule SmolbankWeb.AccountsController do
   end
 
   def auth(conn, params) do
-    with {:ok, %Account{} = account} <- Accounts.verify(params) do
-      token = Token.sign(account)
-
+    with {:ok, %Account{} = account} <- Accounts.verify(params),
+         {:ok, token, _claims} <- Token.sign(account) do
       conn
       |> put_status(:ok)
       |> render(:auth, token: token)
