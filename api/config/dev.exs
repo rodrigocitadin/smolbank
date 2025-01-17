@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :smolbank, Smolbank.Repo,
-  username: "dev",
-  password: "dev",
-  hostname: "localhost",
-  database: "smolbank_dev",
+  database: System.get_env("DATABASE"),
+  username: System.get_env("DATABASE_USERNAME"),
+  password: System.get_env("DATABASE_PASSWORD"),
+  hostname: System.get_env("DATABASE_HOSTNAME"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
