@@ -1,8 +1,7 @@
-import { UUID } from "crypto"
 import { Timestamps } from "@/types"
 
 type Account = {
-  id: UUID
+  id: string
   name: string
   balance: number
   debt: number

@@ -1,8 +1,7 @@
-import { UUID } from "crypto"
 import { Account, TransactionStatus, Timestamps } from "@/types"
 
 type Transaction = {
-  id: UUID
+  id: string
   amount: string
   sender: Account,
   receiver: Account
