@@ -29,3 +29,8 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+*:focus {
+  --tw-ring--color: transparent;
+  outline: none;
+}

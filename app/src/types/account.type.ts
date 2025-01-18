@@ -5,7 +5,7 @@ type Account = {
   name: string
   balance: number
   debt: number
-  cpf: string
+  email: string
 } & Timestamps
 
 export default Account

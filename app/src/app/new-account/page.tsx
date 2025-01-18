@@ -1,7 +1,13 @@
+'use client'
+
+import { signup } from "@/lib";
 import Input from "@/ui/Input";
 import Link from "next/link";
+import { useActionState } from "react";
 
 export default function NewAccount() {
+  const [state, action, pending] = useActionState(signup, undefined)
+
   return (
     <main>
       <h1 className="pb-8 border-b border-b-zinc-200">
@@ -12,12 +18,30 @@ export default function NewAccount() {
           login to an existing one
         </Link>
       </h1>
-      <form className="mt-8 flex flex-col gap-4">
-        <Input label="Email" type="email" placeholder="smol@bank.com" id="email" />
-        <Input label="Password" type="password" placeholder="*************" id="password" />
-        <Input label="Repeat password" type="password" placeholder="*************" id="repeat-password" />
-        <button className="bg-zinc-400 text-white mt-8 py-1">Register</button>
+      <form className="mt-8 flex flex-col gap-4" action={action}>
+        <Input required label="Name" type="text" placeholder="John Doe" id="name" />
+        {state?.errors?.name && <InputError errors={state.errors.name} />}
+
+        <Input required label="Email" type="email" placeholder="smol@bank.com" id="email" />
+        {state?.errors?.email && <InputError errors={state.errors.email} />}
+
+        <Input required label="Password" type="password" placeholder="*************" id="password" />
+        {state?.errors?.password && <InputError errors={state.errors.password} />}
+
+        <button disabled={pending} className="bg-zinc-400 text-white mt-8 py-1 disabled:bg-zinc-200">Register</button>
       </form>
     </main>
+  )
+}
+
+function InputError({ errors }: { errors: string[] }) {
+  return (
+    <div className="flex flex-col">
+      {
+        errors.map(error => (
+          <p className="text-red-500 text-sm" key={error}>{error}</p>
+        ))
+      }
+    </div>
   )
 }

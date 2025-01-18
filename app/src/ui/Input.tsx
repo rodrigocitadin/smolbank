@@ -6,7 +6,8 @@ export default function Input(props: InputProps) {
       <label className="text-xl" htmlFor={props.id}>{props.label}</label>
       <input
         id={props.id}
-        className="border-zinc-200 border px-2 py-1 focus:ring-transparent focus:!outline-zinc-400 focus:outline"
+        name={props.id}
+        className="border-zinc-200 border px-2 py-1 focus:border-zinc-400"
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? "placeholder"}
       />
