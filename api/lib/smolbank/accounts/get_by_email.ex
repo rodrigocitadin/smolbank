@@ -1,9 +1,9 @@
-defmodule Smolbank.Accounts.GetByCpf do
+defmodule Smolbank.Accounts.GetByEmail do
   alias Smolbank.Accounts.Account
   alias Smolbank.Repo
 
-  def call(cpf) do
-    case Repo.get_by(Account, cpf: cpf) do
+  def call(email) do
+    case Repo.get_by(Account, email: email) do
       %Account{} = account -> {:ok, account}
       _ -> {:error, :not_found}
     end

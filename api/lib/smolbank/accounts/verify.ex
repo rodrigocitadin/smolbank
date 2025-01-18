@@ -1,8 +1,8 @@
 defmodule Smolbank.Accounts.Verify do
   alias Smolbank.Accounts
 
-  def call(%{"cpf" => cpf, "password" => password}) do
-    case Accounts.get_by_cpf(cpf) do
+  def call(%{"email" => email, "password" => password}) do
+    case Accounts.get_by_email(email) do
       {:ok, account} -> verify_hash(account, password)
       error -> error
     end
