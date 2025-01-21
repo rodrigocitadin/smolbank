@@ -1,35 +1,58 @@
-'use client'
+import { PayDebtsIcon, SendTransactionIcon } from "@/assets";
+import { axios } from "@/lib";
+import { Action, Transaction } from "@/types";
+import { ActionButton, MoneyCard, TransactionCard } from "@/ui";
+import { cookies } from "next/headers";
 
-import { signin } from "@/lib";
-import { FormError, Input, InputError } from "@/ui";
-import Link from "next/link";
-import { useActionState } from "react";
+export default async function Dashboard() {
+  // const accountId = (await cookies()).get('account_id')?.value
+  // if (!accountId) return null
 
-export default function Home() {
-  const [state, action, pending] = useActionState(signin, undefined)
+  // let { data: { data: transactions } } =
+  //   await axios.get<{ message: string, data: Transaction[] }>("/accounts/transactions")
+  
+  const transactions = null
+
+  const actions: Action[] = [
+    {
+      id: 1,
+      icon: SendTransactionIcon,
+      text: "New transaction"
+    },
+    {
+      id: 2,
+      icon: PayDebtsIcon,
+      text: "Pay debts"
+    },
+  ]
 
   return (
     <main>
-      <h1>
-        Login to your account or <Link
-          href="/new-account"
-          className="text-blue-500 underline visited:text-purple-500"
-        >
-          create one
-        </Link>
-      </h1>
-
-      <form className="mt-8 flex flex-col gap-4" action={action}>
-        <Input required label="Email" type="email" placeholder="smol@bank.com" id="email" />
-        {state?.errors?.email && <InputError errors={state.errors.email} />}
-
-        <Input required label="Password" type="password" placeholder="*************" id="password" />
-        {state?.errors?.password && <InputError errors={state.errors.password} />}
-
-        <FormError error={state?.message} />
-
-        <button disabled={pending} className="bg-zinc-400 text-white mt-8 py-1 disabled:bg-zinc-200">Login</button>
-      </form>
+      <div className="flex gap-2 border-b border-b-zinc-200 pb-8">
+        {actions.map(action => <ActionButton key={action.id} {...action} />)}
+      </div>
+      <section className="my-8">
+        <h2 className="text-xl mb-4">Your transactions</h2>
+        {transactions
+          ? (
+            <>
+              {/* {transactions.map(transaction => */}
+              {/*   <TransactionCard */}
+              {/*     key={transaction.id} */}
+              {/*     transaction={transaction} */}
+              {/*     accountId={accountId} */}
+              {/*   /> */}
+              {/* )} */}
+              <button className="block mx-auto">
+                Load more
+              </button>
+            </>
+          )
+          : (
+            <p className="text-zinc-500">You don't have any transactions yet :(</p>
+          )
+        }
+      </section>
     </main>
-  )
+  );
 }
