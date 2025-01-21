@@ -29,7 +29,7 @@ export default function NewAccount() {
         <Input required label="Password" type="password" placeholder="*************" id="password" />
         {state?.errors?.password && <InputError errors={state.errors.password} />}
 
-        <FormError error={!!state?.message} />
+        <FormError error={state?.message} />
 
         <button disabled={pending} className="bg-zinc-400 text-white mt-8 py-1 disabled:bg-zinc-200">Register</button>
       </form>

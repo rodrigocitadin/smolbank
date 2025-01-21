@@ -18,7 +18,10 @@ export default async function signup(_state: SignupFormState, formData: FormData
   try {
     await axios.post("/accounts", validateFields.data)
   } catch (err) {
-    console.log(err)
+    if (axios.isAxiosError(err)) {
+      if (err.response?.data.errors) return { errors: err.response.data.errors }
+      return { message: "Something went wrong, please try again later..." }
+    }
     return { message: String(err) }
   }
 
