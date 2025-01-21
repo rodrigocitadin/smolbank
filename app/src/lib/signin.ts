@@ -3,6 +3,7 @@
 import { SigninFormSchema, SigninFormState } from "@/types"
 import { axios } from "@/lib"
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
 export default async function signin(_state: SigninFormState, formData: FormData) {
   const validateFields = SigninFormSchema.safeParse({
@@ -17,8 +18,10 @@ export default async function signin(_state: SigninFormState, formData: FormData
   }
 
   try {
-    await axios.post("/accounts/auth", validateFields.data)
-    console.log("done")
+    const response = await axios.post("/accounts/auth", validateFields.data)
+    const cookiesStore = await cookies()
+
+    cookiesStore.set('smolbank:account-token', response.data.bearer)
   } catch (err) {
     if (axios.isAxiosError(err)) {
       if (err.status === 400) return { message: "Invalid login, probably wrong credentials" }
