@@ -19,7 +19,7 @@ export default async function signup(_state: SignupFormState, formData: FormData
     await axios.post("/accounts", validateFields.data)
   } catch (err) {
     console.log(err)
-    return
+    return { message: String(err) }
   }
 
   redirect('/')

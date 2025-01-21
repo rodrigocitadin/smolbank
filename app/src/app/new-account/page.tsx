@@ -1,6 +1,7 @@
 'use client'
 
 import { signup } from "@/lib";
+import { FormError, InputError } from "@/ui";
 import Input from "@/ui/Input";
 import Link from "next/link";
 import { useActionState } from "react";
@@ -28,20 +29,10 @@ export default function NewAccount() {
         <Input required label="Password" type="password" placeholder="*************" id="password" />
         {state?.errors?.password && <InputError errors={state.errors.password} />}
 
+        <FormError error={!!state?.message} />
+
         <button disabled={pending} className="bg-zinc-400 text-white mt-8 py-1 disabled:bg-zinc-200">Register</button>
       </form>
     </main>
-  )
-}
-
-function InputError({ errors }: { errors: string[] }) {
-  return (
-    <div className="flex flex-col">
-      {
-        errors.map(error => (
-          <p className="text-red-500 text-sm" key={error}>{error}</p>
-        ))
-      }
-    </div>
   )
 }
