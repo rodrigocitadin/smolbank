@@ -21,7 +21,7 @@ export default async function signin(_state: SigninFormState, formData: FormData
     const response = await axios.post("/accounts/auth", validateFields.data)
     const cookiesStore = await cookies()
 
-    cookiesStore.set('smolbank:account-token', response.data.bearer)
+    cookiesStore.set('smolbank:account-token', response.data.bearer, { httpOnly: true })
   } catch (err) {
     if (axios.isAxiosError(err)) {
       if (err.status === 400) return { message: "Invalid login, probably wrong credentials" }
@@ -32,5 +32,5 @@ export default async function signin(_state: SigninFormState, formData: FormData
     return { message: String(err) }
   }
 
-  redirect('/dashboard')
+  redirect('/')
 }

@@ -3,8 +3,8 @@ import { Timestamps } from "@/types"
 type Account = {
   id: string
   name: string
-  balance: number
-  debt: number
+  balance: string
+  debt: string
   email: string
 } & Timestamps
 

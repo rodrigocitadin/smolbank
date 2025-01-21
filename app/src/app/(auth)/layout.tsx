@@ -13,7 +13,7 @@ export default function AuthLayout({
   return (
     <>
       <header>
-        <h1 className="text-3xl">Smolbank</h1>
+        <h1 className="text-4xl">Smolbank</h1>
         <h2 className="pb-8 border-b border-b-zinc-200">
           {
             pathname.startsWith("/signin")
