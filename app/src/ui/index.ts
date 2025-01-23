@@ -4,6 +4,7 @@ import Input from "./Input";
 import InputError from "./InputError";
 import MoneyCard from "./MoneyCard";
 import TransactionCard from "./TransactionCard";
+import TransactionPage from "./TransactionPage";
 
 export {
   ActionButton,
@@ -12,4 +13,5 @@ export {
   InputError,
   MoneyCard,
   TransactionCard,
+  TransactionPage
 }

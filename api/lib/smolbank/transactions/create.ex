@@ -5,11 +5,17 @@ defmodule Smolbank.Transactions.Create do
   alias Smolbank.Repo
   alias Ecto.Multi
 
-  def call(%{"sender_id" => sender_id, "receiver_id" => receiver_id, "amount" => amount} = params) do
-    with true <- sender_id !== receiver_id,
-         {:ok, receiver} <- Accounts.get(receiver_id),
+  def call(
+        %{"sender_id" => sender_id, "email" => receiver_email, "amount" => amount} =
+          params
+      ) do
+    with {:ok, %Account{} = receiver} <- Accounts.get_by_email(receiver_email),
+         true <- sender_id !== receiver.id,
          {:ok, amount} <- Decimal.cast(amount),
-         {:ok, sender} <- Accounts.get(sender_id, lock: "FOR UPDATE") do
+         {:ok, %Account{} = sender} <- Accounts.get(sender_id, lock: "FOR UPDATE") do
+      params = Map.merge(%{"receiver_id" => receiver.id}, params)
+      IO.inspect(params)
+
       Multi.new()
       |> withdraw(sender, amount)
       |> deposit(receiver, amount)

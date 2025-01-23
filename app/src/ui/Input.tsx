@@ -7,9 +7,10 @@ export default function Input(props: InputProps) {
       <input
         id={props.id}
         name={props.id}
-        className="border-zinc-200 border px-2 py-1 focus:border-zinc-400"
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? "placeholder"}
+        className="border-zinc-200 border px-2 py-1 focus:border-zinc-400"
+        {...props}
       />
     </div>
   )

@@ -20,7 +20,7 @@ export default function Signup() {
 
       <FormError error={state?.message} />
 
-      <button disabled={pending} className="bg-zinc-900 text-white mt-8 py-1 disabled:bg-zinc-200">Register</button>
+      <button disabled={pending} className="bg-zinc-900 text-white mt-8 py-1 disabled:bg-zinc-600">Register</button>
     </form>
   )
 }
