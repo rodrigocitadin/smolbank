@@ -2,7 +2,7 @@ import { axios, verifyToken } from "@/lib";
 import { Account } from "@/types";
 import { TransactionPage } from "@/ui";
 
-export default async function Transaction() {
+export default async function Transactions() {
   const { accountToken } = await verifyToken()
 
   const bearerHeader = { headers: { "Authorization": `Bearer ${accountToken}` } }
