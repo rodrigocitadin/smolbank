@@ -19,12 +19,12 @@ export default async function DashboardLayout({
       <header>
         <h1 className="text-4xl">Hi, {account.data.name}</h1>
         <h2 className="text-2xl">How are your finances today?</h2>
-        <div className="py-4 my-8 border-y border-y-zinc-200 flex flex-col gap-4">
+        <div className="pt-4 my-8 border-y border-y-zinc-200 flex flex-col">
           <div>
             <MoneyCard text="Balance:" amount={account.data.balance} />
             <MoneyCard text="Debt:" amount={account.data.debt} negative />
           </div>
-          <div className="flex gap-4">
+          <div className="flex -mx-4 gap-4 px-4 overflow-x-scroll">
             {actions.map(action => <ActionButton key={action.id} {...action} />)}
           </div>
         </div>

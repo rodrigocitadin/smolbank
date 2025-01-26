@@ -15,18 +15,12 @@ export default async function Dashboard() {
       <h2 className="text-xl mb-4">Your transactions</h2>
       {transactions.data.length
         ? (
-          <>
-            {transactions.data.map(transaction =>
-              <TransactionCard
-                key={transaction.id}
-                transaction={transaction}
-                accountId={accountId}
-              />
-            )}
-            <button className="block mx-auto">
-              Load more
-            </button>
-          </>
+          transactions.data.map(transaction =>
+            <TransactionCard
+              key={transaction.id}
+              transaction={transaction}
+              accountId={accountId}
+            />)
         )
         : (
           <p className="text-zinc-500">You don't have any transactions yet :(</p>

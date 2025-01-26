@@ -1,7 +1,13 @@
-import { PayDebtsIcon, SendTransactionIcon } from "@/assets";
+import { DashboardIcon, PayDebtsIcon, SendTransactionIcon } from "@/assets";
 import { Action } from "@/types";
 
 const actions: Action[] = [
+  {
+    id: 0,
+    icon: DashboardIcon,
+    text: "Your transactions",
+    redirect: "/"
+  },
   {
     id: 1,
     icon: SendTransactionIcon,
