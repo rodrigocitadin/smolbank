@@ -25,6 +25,14 @@ defmodule SmolbankWeb.TransactionsController do
     end
   end
 
+  def one(conn, %{"id" => id}) do
+    transaction = Transactions.get(id)
+
+    conn
+    |> put_status(:ok)
+    |> render(:one, transaction: transaction)
+  end
+
   def all(conn, _params) do
     transactions =
       conn.assigns[:account_id]

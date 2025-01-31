@@ -7,9 +7,21 @@
 # General application configuration
 import Config
 
+config :smolbank, Smolbank.Repo,
+  database: "smolbank",
+  username: "smolbank",
+  password: "smolbank",
+  hostname: "localhost",
+  timout: 10_000,
+  ownership_timeout: 15_000
+
 config :smolbank,
   ecto_repos: [Smolbank.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
+
+config :smolbank, Smolbank.Guardian,
+  issuer: "smolbank",
+  secret_key: System.get_env("GUARDIAN_SECRET")
 
 # Configures the endpoint
 config :smolbank, SmolbankWeb.Endpoint,

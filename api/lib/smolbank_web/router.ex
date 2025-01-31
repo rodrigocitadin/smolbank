@@ -25,6 +25,7 @@ defmodule SmolbankWeb.Router do
       delete "/", AccountsController, :delete
 
       get "/transactions", TransactionsController, :all
+      get "/transactions/:id", TransactionsController, :one
       post "/transactions", TransactionsController, :create
       post "/transactions/refund/:transaction_id", TransactionsController, :refund
     end

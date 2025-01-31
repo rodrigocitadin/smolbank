@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     container_name: smolbank 
     environment:
-      POSTGRES_USER: ${PG_USERNAME}
-      POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: smolbank_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
