@@ -1,6 +1,6 @@
 type Action = {
   id: number
-  icon: any
+  icon: any // eslint-disable-line
   text: string
   redirect: string
 }

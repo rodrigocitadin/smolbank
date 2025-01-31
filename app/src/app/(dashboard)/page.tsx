@@ -23,7 +23,7 @@ export default async function Dashboard() {
             />)
         )
         : (
-          <p className="text-zinc-500">You don't have any transactions yet :(</p>
+          <p className="text-zinc-500">You don&apos;t have any transactions yet :(</p>
         )
       }
     </>

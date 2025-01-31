@@ -4,7 +4,7 @@ import { type Transaction } from "@/types";
 export default async function Transaction({ params }: {
   params: Promise<{ id: string }>
 }) {
-  const { accountToken, accountId } = await verifyToken()
+  const { accountToken } = await verifyToken()
   const bearerHeader = { headers: { "Authorization": `Bearer ${accountToken}` } }
 
   const transactionId = (await params).id;
