@@ -7,6 +7,10 @@
 # General application configuration
 import Config
 
+if config_env() in [:dev, :test] do
+  import_config ".env.exs"
+end
+
 config :smolbank, Smolbank.Repo,
   database: "smolbank",
   username: "smolbank",
@@ -53,4 +57,5 @@ config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
+
 import_config "#{config_env()}.exs"

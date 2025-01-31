@@ -26,3 +26,5 @@ erl_crash.dump
 smolbank-*.tar
 
 .env
+
+/config/.env.exs
