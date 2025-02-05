@@ -12,22 +12,24 @@ defmodule Smolbank.Transactions.Refund do
          true <- valid_refund?(transaction),
          {:ok, %Account{} = sender} <- Accounts.get(sender_id, lock: "FOR UPDATE"),
          {:ok, %Account{} = receiver} <- Accounts.get(transaction.receiver_id) do
+      IO.inspect("here")
+
       Multi.new()
       |> withdraw(receiver, transaction.amount)
       |> deposit(sender, transaction.amount)
       |> update(transaction_id)
       |> Repo.transaction()
-      |> preload_assocs()
     else
-      false -> {:error, :bad_request}
+      _ -> {:error, :bad_request}
     end
   end
 
   defp correct_owner?(%Transaction{sender_id: sender_id}, owner_id), do: sender_id === owner_id
-  defp valid_refund?(%Transaction{status: status}), do: status !== :refunded
+  defp valid_refund?(%Transaction{status: status}), do: status === :finished
 
   defp withdraw(multi, %Account{} = account, amount) do
     updated_changeset = Account.changeset(account, %{debt: amount})
+    IO.inspect(updated_changeset, label: "withdraw")
 
     Multi.update(multi, :withdraw, updated_changeset)
   end
@@ -35,20 +37,16 @@ defmodule Smolbank.Transactions.Refund do
   defp deposit(multi, %Account{} = account, amount) do
     new_balance = Decimal.add(account.balance, amount)
     updated_changeset = Account.changeset(account, %{balance: new_balance})
+    IO.inspect(updated_changeset, label: "deposit")
 
     Multi.update(multi, :deposit, updated_changeset)
   end
 
   defp update(multi, transaction_id) do
-    transaction = Repo.get(Transaction, transaction_id)
-    Multi.update(multi, :transaction, Transaction.changeset(transaction, %{status: :refunded}))
+    {:ok, transaction} = Transactions.get(transaction_id)
+    updated_changeset = Transaction.changeset(transaction, %{status: :refunded})
+    IO.inspect(updated_changeset, label: "transaction")
+
+    Multi.update(multi, :transaction, updated_changeset)
   end
-
-  defp preload_assocs({:ok, %{transaction: transaction}}) do
-    result = Repo.preload(transaction, [:sender, :receiver])
-
-    {:ok, result}
-  end
-
-  defp preload_assocs({:error, _, error, _}), do: {:error, error}
 end

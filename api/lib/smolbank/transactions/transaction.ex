@@ -5,7 +5,7 @@ defmodule Smolbank.Transactions.Transaction do
 
   @transaction_params [:amount, :receiver_id, :sender_id]
   @transaction_status [:pending, :finished, :cancelled, :refunded]
-  @transaction_update_params [:status | @transaction_params]
+  @transaction_update_params [:status]
 
   @derive {Jason.Encoder,
            only: [:id, :amount, :sender, :receiver, :status, :updated_at, :inserted_at]}

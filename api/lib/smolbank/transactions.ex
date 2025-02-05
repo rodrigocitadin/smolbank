@@ -1,6 +1,6 @@
 defmodule Smolbank.Transactions do
   alias Smolbank.Transactions.AllByAccountId
-  alias Smolbank.Accounts.All
+  alias Smolbank.Transactions.All
   alias Smolbank.Transactions.Refund
   alias Smolbank.Transactions.Get
   alias Smolbank.Transactions.Create
