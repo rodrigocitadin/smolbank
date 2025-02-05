@@ -1,21 +1,24 @@
 'use client'
 
-import Image from "next/image";
 import { Action } from "@/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRef } from "react";
 
 export default function ActionButton(action: Action) {
   const pathname = usePathname()
+  const ref = useRef<HTMLAnchorElement>(null)
 
   return (
     <Link
+      ref={ref}
       href={action.redirect}
       className={
-        `my-4 shadow-md flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-md p-4 min-w-40 ${pathname === action.redirect ? "!from-zinc-300 !to-zinc-200" : ""}`
+        `my-4 flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-200 to-zinc-50 p-4 min-w-40 ${pathname === action.redirect ? "!from-zinc-950 !to-zinc-800 *:text-zinc-50" : ""}`
       }
+      onClick={() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })}
     >
-      <Image src={action.icon} alt={action.text} width={25} height={25} />
+      {/* <Image src={action.icon} alt={action.text} width={25} height={25} /> */}
       <span>{action.text}</span>
     </Link>
   )

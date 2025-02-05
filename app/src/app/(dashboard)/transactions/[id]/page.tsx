@@ -1,5 +1,8 @@
+import { capitalizeFirstChar } from "@/helpers";
 import { axios, verifyToken } from "@/lib";
 import { type Transaction } from "@/types";
+import { TransactionCard } from "@/ui";
+import { format } from "date-fns";
 
 export default async function Transaction({ params }: {
   params: Promise<{ id: string }>
@@ -13,9 +16,10 @@ export default async function Transaction({ params }: {
 
   return (
     <>
-      <h1>{transactionId}</h1>
-      <p>{JSON.stringify(transaction.sender)}</p>
-      <p>{JSON.stringify(transaction.receiver)}</p>
+      <h2 className="text-sm text-zinc-500 mb-4">
+        Transaction sent by <strong>{capitalizeFirstChar(transaction.sender.name)}</strong> at {format(transaction.inserted_at, "dd MMM, yyyy 'at' hh:mm a")}
+      </h2>
+      <TransactionCard transaction={transaction} accountId={transaction.sender.id} />
     </>
   )
 }
