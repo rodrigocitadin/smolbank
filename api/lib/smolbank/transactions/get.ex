@@ -4,11 +4,8 @@ defmodule Smolbank.Transactions.Get do
 
   def call(id, opts \\ []) do
     case Repo.get(Transaction, id, opts) do
-      %Transaction{} = transaction -> {:ok, preload_assocs(transaction)}
+      %Transaction{} = transaction -> Repo.preload(transaction, [:sender, :receiver])
       _ -> {:error, :not_found}
     end
   end
-
-  defp preload_assocs(transaction),
-    do: Repo.preload(transaction, [:sender, :receiver])
 end

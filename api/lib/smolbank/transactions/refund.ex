@@ -7,13 +7,11 @@ defmodule Smolbank.Transactions.Refund do
   alias Transactions.Transaction
 
   def call(transaction_id, sender_id) do
-    with {:ok, %Transaction{} = transaction} <- Transactions.get(transaction_id),
+    with %Transaction{} = transaction <- Transactions.get(transaction_id),
          true <- correct_owner?(transaction, sender_id),
          true <- valid_refund?(transaction),
          {:ok, %Account{} = sender} <- Accounts.get(sender_id, lock: "FOR UPDATE"),
          {:ok, %Account{} = receiver} <- Accounts.get(transaction.receiver_id) do
-      IO.inspect("here")
-
       Multi.new()
       |> withdraw(receiver, transaction.amount)
       |> deposit(sender, transaction.amount)
@@ -43,7 +41,7 @@ defmodule Smolbank.Transactions.Refund do
   end
 
   defp update(multi, transaction_id) do
-    {:ok, transaction} = Transactions.get(transaction_id)
+    transaction = Transactions.get(transaction_id)
     updated_changeset = Transaction.changeset(transaction, %{status: :refunded})
     IO.inspect(updated_changeset, label: "transaction")
 
