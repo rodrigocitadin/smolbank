@@ -2,7 +2,6 @@
 
 import { axios } from "@/lib"
 import { revalidatePath } from "next/cache"
-// import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 
 export default async function refund(transactionId: string) {

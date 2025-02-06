@@ -1,4 +1,4 @@
-import { ActionButton, MoneyCard } from "@/ui";
+import { ActionButton, LogoutButton, MoneyCard } from "@/ui";
 import actions from "@/lib/actions";
 import axios from "axios";
 import { verifyToken } from "@/lib";
@@ -25,7 +25,10 @@ export default async function DashboardLayout({
             <MoneyCard text="Debt:" amount={account.data.debt} negative />
           </div>
           <div className="flex -mx-4 gap-4 px-4 overflow-x-scroll">
-            {actions.map(action => <ActionButton key={action.id} {...action} />)}
+            {actions.map(action => action.text === "Logout"
+              ? <LogoutButton key={action.id} {...action} />
+              : <ActionButton key={action.id} {...action} />
+            )}
           </div>
         </div>
       </header>

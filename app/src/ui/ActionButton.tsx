@@ -13,12 +13,9 @@ export default function ActionButton(action: Action) {
     <Link
       ref={ref}
       href={action.redirect}
-      className={
-        `my-4 flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-200 to-zinc-50 p-4 min-w-40 ${pathname === action.redirect ? "!from-zinc-950 !to-zinc-800 *:text-zinc-50" : ""}`
-      }
+      className={`my-4 flex flex-col items-center gap-2 bg-gradient-to-tr from-zinc-200 to-zinc-50 p-4 min-w-40 ${pathname === action.redirect ? "!from-zinc-950 !to-zinc-800 *:text-zinc-50" : ""}`}
       onClick={() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })}
     >
-      {/* <Image src={action.icon} alt={action.text} width={25} height={25} /> */}
       <span>{action.text}</span>
     </Link>
   )

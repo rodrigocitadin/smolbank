@@ -44,5 +44,5 @@ export default async function newTransaction(_state: NewTransactionFormState, fo
     return { message: String(err) }
   }
 
-  redirect(`/transactions/${transactionId}`)
+  redirect("/")
 }
