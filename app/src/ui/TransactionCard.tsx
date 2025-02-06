@@ -4,12 +4,24 @@ import { capitalizeFirstChar } from "@/helpers"
 import refund from "@/lib/refund"
 import { Transaction } from "@/types"
 import { format } from "date-fns"
+import { useEffect, useState } from "react"
 
 export default function TransactionCard({ transaction, accountId }: { transaction: Transaction, accountId: string }) {
+  const [confirmRefund, setConfirmRefund] = useState(false)
+
   const isSender = transaction.sender.id === accountId
   const kind = isSender && transaction.status === 'finished' ? 'Sent' : 'Received'
 
-  function handleRefund() { refund(transaction.id) }
+
+  function handleRefund() {
+    confirmRefund ? refund(transaction.id) : setConfirmRefund(true)
+  }
+
+  useEffect(() => {
+    if (confirmRefund) setTimeout(() => {
+      setConfirmRefund(false)
+    }, 5000)
+  }, [confirmRefund])
 
   return (
     <div className="my-4 p-4 flex flex-col bg-gradient-to-tr from-zinc-200 to-zinc-50">
@@ -30,10 +42,10 @@ export default function TransactionCard({ transaction, accountId }: { transactio
         {
           isSender && transaction.status === "finished" ? (
             <button
-              className="bg-gradient-to-tr from-zinc-900 to-zinc-800 px-4 text-zinc-200"
+              className={`bg-gradient-to-tr px-4 text-zinc-200 min-w-24 ${confirmRefund ? "from-red-700 to-red-600" : "from-zinc-900 to-zinc-800"}`}
               onClick={handleRefund}
             >
-              Refund
+              {confirmRefund ? "Confirm" : "Refund"}
             </button>
           ) : null
         }
