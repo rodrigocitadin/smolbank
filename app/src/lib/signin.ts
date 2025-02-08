@@ -24,9 +24,8 @@ export default async function signin(_state: SigninFormState, formData: FormData
     cookiesStore.set('smolbank:account-token', response.data.bearer, { httpOnly: true })
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.status === 400) return { message: "Invalid login, probably wrong credentials" }
+      if (err.status === 400 || err.status === 401) return { message: "Invalid login, probably wrong credentials" }
       if (err.status === 404) return { message: "Email not found, try creating an account" }
-
       return { message: "Something went wrong, please try again later..." }
     }
     return { message: String(err) }

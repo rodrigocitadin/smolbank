@@ -4,6 +4,7 @@ import { PayDebtsFormSchema, PayDebtsFormState } from "@/types"
 import { axios } from "@/lib"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 
 export default async function payDebts(_state: PayDebtsFormState, formData: FormData) {
   const validatedFields = PayDebtsFormSchema.safeParse({ amount: formData.get("amount") })
@@ -21,11 +22,12 @@ export default async function payDebts(_state: PayDebtsFormState, formData: Form
     )
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.status === 404) return { message: "Email not found, try another one" }
+      if (err.status === 400) return { message: "Invalid payment" }
       return { message: "Something went wrong, please try again later..." }
     }
     return { message: String(err) }
   }
 
+  revalidatePath("/")
   redirect("/")
 }

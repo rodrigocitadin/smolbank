@@ -4,6 +4,7 @@ import { NewTransactionFormSchema, NewTransactionFormState } from "@/types"
 import { axios } from "@/lib"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 
 export default async function newTransaction(_state: NewTransactionFormState, formData: FormData) {
   const validatedFields = NewTransactionFormSchema.safeParse({
@@ -28,11 +29,13 @@ export default async function newTransaction(_state: NewTransactionFormState, fo
     )
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.status === 404) return { message: "Email not found, try another one" }
+      if (err.status === 400) return { message: "Invalid transaction" }
+      if (err.status === 404) return { message: "Account not found" }
       return { message: "Something went wrong, please try again later..." }
     }
     return { message: String(err) }
   }
 
+  revalidatePath("/")
   redirect("/")
 }
