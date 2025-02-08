@@ -1,5 +1,13 @@
+import { axios, verifyToken } from "@/lib"
+import { Account } from "@/types"
+import { DebtPage } from "@/ui"
+
 export default async function PayDebt() {
-  return (
-    <h1>Pay debt</h1>
-  );
+  const { accountToken } = await verifyToken()
+
+  const bearerHeader = { headers: { "Authorization": `Bearer ${accountToken}` } }
+  const { data: accountResponse } = await axios.get<{ message: string, data: Account }>("/accounts", bearerHeader)
+  const { data: account } = accountResponse
+
+  return <DebtPage account={account} />
 }

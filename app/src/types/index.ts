@@ -6,6 +6,7 @@ import Transaction from "./transaction.type"
 import { SigninFormSchema, type SigninFormState } from "./signin-form"
 import { SignupFormSchema, type SignupFormState } from "./signup-form"
 import { NewTransactionFormSchema, type NewTransactionFormState } from "./new-transaction-form"
+import { PayDebtsFormSchema, type PayDebtsFormState } from "./pay-debts-form"
 
 export type {
   Account,
@@ -15,11 +16,13 @@ export type {
   Transaction,
   SigninFormState,
   SignupFormState,
-  NewTransactionFormState
+  NewTransactionFormState,
+  PayDebtsFormState
 }
 
 export {
   SigninFormSchema,
   SignupFormSchema,
-  NewTransactionFormSchema
+  NewTransactionFormSchema,
+  PayDebtsFormSchema
 }

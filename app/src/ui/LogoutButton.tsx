@@ -14,9 +14,7 @@ export default function LogoutButton(action: Action) {
   }
 
   useEffect(() => {
-    if (confirmLogout) setTimeout(() => {
-      setConfirmLogout(false)
-    }, 3000)
+    if (confirmLogout) setTimeout(() => { setConfirmLogout(false) }, 3000)
   }, [confirmLogout])
 
   return (

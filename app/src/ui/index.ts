@@ -1,4 +1,5 @@
 import ActionButton from "./ActionButton";
+import DebtPage from "./DebtPage";
 import FormError from "./FormError";
 import Input from "./Input";
 import InputError from "./InputError";
@@ -9,6 +10,7 @@ import TransactionPage from "./TransactionPage";
 
 export {
   ActionButton,
+  DebtPage,
   FormError,
   Input,
   InputError,
