@@ -15,7 +15,7 @@ export default async function payDebts(_state: PayDebtsFormState, formData: Form
     const accountToken = cookiesStore.get('smolbank:account-token')?.value
 
     await axios.post(
-      "/accounts/transactions/debt",
+      "/accounts/debt",
       validatedFields.data,
       { headers: { Authorization: `Bearer ${accountToken}` } }
     )

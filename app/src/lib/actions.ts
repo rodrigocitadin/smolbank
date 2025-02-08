@@ -14,7 +14,7 @@ const actions: Action[] = [
   {
     id: 2,
     text: "Pay debts",
-    redirect: "/transactions/debt",
+    redirect: "/debt",
   },
   {
     id: 3,
