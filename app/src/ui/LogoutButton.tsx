@@ -10,7 +10,7 @@ export default function LogoutButton(action: Action) {
 
   function handleLogout() {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-    confirmLogout ? logout() : setConfirmLogout(true)
+    return confirmLogout ? logout() : setConfirmLogout(true)
   }
 
   useEffect(() => {

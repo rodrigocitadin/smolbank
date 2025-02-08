@@ -14,7 +14,7 @@ export default function TransactionCard({ transaction, accountId }: { transactio
 
 
   function handleRefund() {
-    confirmRefund ? refund(transaction.id) : setConfirmRefund(true)
+    return confirmRefund ? refund(transaction.id) : setConfirmRefund(true)
   }
 
   useEffect(() => {
