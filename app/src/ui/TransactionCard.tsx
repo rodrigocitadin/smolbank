@@ -20,7 +20,7 @@ export default function TransactionCard({ transaction, accountId }: { transactio
   useEffect(() => {
     if (confirmRefund) setTimeout(() => {
       setConfirmRefund(false)
-    }, 5000)
+    }, 3000)
   }, [confirmRefund])
 
   return (
