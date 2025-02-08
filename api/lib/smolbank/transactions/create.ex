@@ -14,7 +14,6 @@ defmodule Smolbank.Transactions.Create do
          {:ok, amount} <- Decimal.cast(amount),
          {:ok, %Account{} = sender} <- Accounts.get(sender_id, lock: "FOR UPDATE") do
       params = Map.merge(%{"receiver_id" => receiver.id}, params)
-      IO.inspect(params)
 
       Multi.new()
       |> withdraw(sender, amount)

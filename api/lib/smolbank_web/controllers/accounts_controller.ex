@@ -35,6 +35,17 @@ defmodule SmolbankWeb.AccountsController do
     end
   end
 
+  def pay_debt(conn, %{"amount" => _amount} = params) do
+    account_id = conn.assigns[:account_id]
+    params = Map.merge(%{"id" => account_id}, params)
+
+    with {:ok, _account} <- Accounts.pay_debt(params) do
+      conn
+      |> send_resp(:no_content, "")
+      |> halt()
+    end
+  end
+
   def delete(conn, _params) do
     account_id = conn.assigns[:account_id]
 

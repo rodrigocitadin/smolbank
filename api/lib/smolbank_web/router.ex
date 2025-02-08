@@ -20,6 +20,7 @@ defmodule SmolbankWeb.Router do
       pipe_through :auth
 
       get "/", AccountsController, :index
+      post "/debt", AccountsController, :pay_debt
       patch "/", AccountsController, :update
       put "/", AccountsController, :update
       delete "/", AccountsController, :delete

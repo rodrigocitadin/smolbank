@@ -1,4 +1,5 @@
 defmodule Smolbank.Accounts do
+  alias Smolbank.Accounts.PayDebt
   alias Smolbank.Accounts.All
   alias Smolbank.Accounts.Delete
   alias Smolbank.Accounts.Update
@@ -14,4 +15,5 @@ defmodule Smolbank.Accounts do
   defdelegate verify(params), to: Verify, as: :call
   defdelegate update(params), to: Update, as: :call
   defdelegate delete(id), to: Delete, as: :call
+  defdelegate pay_debt(params), to: PayDebt, as: :call
 end
