@@ -1,5 +1,6 @@
 # Smolbank
 
+```
 Clients -> Traefik -> multiple Phoenix API instances
   |-> APIs produce events -> Kafka/Redpanda (durable)
   |-> APIs write append-only WAL (Postgres events table)
@@ -8,3 +9,4 @@ Account GenServers supervised -> keep in-memory state, rehydrate from WAL/Read D
 PubSub -> LiveView updates
 Observability: Prometheus / Grafana / OpenTelemetry/Jaeger / Loki
 Local: Docker Compose (Redpanda), later K8s + Terraform + Traefik
+```
