@@ -3,3 +3,19 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+@layer components {
+  .page-background {
+    background-image: url('/images/background.gif');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  .glass-effect {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(11.6px);
+  }
+}
