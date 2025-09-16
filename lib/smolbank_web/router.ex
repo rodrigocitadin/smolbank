@@ -23,6 +23,7 @@ defmodule SmolbankWeb.Router do
 
     live_session :auth_session do
       live "/login", Auth.LoginLive, :new
+      live "/register", Auth.RegisterLive, :new
     end
   end
 
