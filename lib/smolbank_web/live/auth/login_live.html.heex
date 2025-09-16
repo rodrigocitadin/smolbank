@@ -1,0 +1,42 @@
+<div class="text-neutral-900">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold">Welcome back to Smolbank!</h1>
+    <p class="text-xl text-neutral-700">Login to continue</p>
+  </div>
+
+  <.simple_form for={@form} phx-submit="login">
+    <.input
+      field={@form[:email]}
+      placeholder="dummy@email.com"
+      type="email"
+      name="email"
+      label="Email"
+      value=""
+      required
+    />
+    <.input
+      field={@form[:password]}
+      placeholder="topsecret123!"
+      type="password"
+      name="password"
+      label="Password"
+      value=""
+      required
+    />
+
+    <:actions>
+      <.button
+        type="submit"
+        phx-disable-with="Entering..."
+        class="mt-4 w-full bg-neutral-900 text-neutral-100 font-bold py-4 px-4 rounded-md hover:bg-neutral-800 transition-colors"
+      >
+        Login
+      </.button>
+    </:actions>
+  </.simple_form>
+
+  <div class="flex justify-around mt-4 *:underline">
+    <a href="#">Register</a>
+    <a href="#">Forgot Password?</a>
+  </div>
+</div>

@@ -16,8 +16,14 @@ defmodule SmolbankWeb.Router do
 
   scope "/", SmolbankWeb do
     pipe_through :browser
+  end
 
-    get "/", PageController, :home
+  scope "/auth", SmolbankWeb do
+    pipe_through :browser
+
+    live_session :auth_session do
+      live "/login", Auth.LoginLive, :new
+    end
   end
 
   # Other scopes may use custom stacks.
