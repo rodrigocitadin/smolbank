@@ -1,5 +1,6 @@
 import { HEADERS } from "@/consts";
 import { TokenPayload, TransferRequest } from "@/types";
+import { AccountActor } from "@/actors";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 
 export async function handleTransfer(request: Request, env: Env): Promise<Response> {
@@ -10,7 +11,6 @@ export async function handleTransfer(request: Request, env: Env): Promise<Respon
 		}
 
 		const token = authHeader.split(" ")[1];
-
 		const isValid = await jwt.verify(token, env.JWT_SECRET);
 		if (!isValid) {
 			return new Response(JSON.stringify({ error: "Invalid or expired token" }), { status: 401, headers: HEADERS });
@@ -21,39 +21,31 @@ export async function handleTransfer(request: Request, env: Env): Promise<Respon
 		const loggedInAccountId = typedPayload.accountId;
 
 		const body = await request.json() as TransferRequest;
-		const { fromAccountId, toAccountId, amount } = body;
+		const { transactionId, fromAccountId, toAccountId, amount } = body;
 
+		if (!transactionId) return new Response(JSON.stringify({ error: "Missing transactionId" }), { status: 400, headers: HEADERS });
 		if (amount <= 0) return new Response(JSON.stringify({ error: "Amount must be greater than zero" }), { status: 400, headers: HEADERS });
 
 		if (fromAccountId !== loggedInAccountId) {
 			return new Response(JSON.stringify({ error: "You can only transfer money from your own account" }), { status: 403, headers: HEADERS });
 		}
 
-		const transactionId = crypto.randomUUID();
+		const actorNamespace = env.ACCOUNT_ACTOR as DurableObjectNamespace<AccountActor>;
 
-		const fromId = env.ACCOUNT_ACTOR.idFromName(fromAccountId);
-		const toId = env.ACCOUNT_ACTOR.idFromName(toAccountId);
+		const fromId = actorNamespace.idFromName(fromAccountId);
+		const fromStub = actorNamespace.get(fromId);
 
-		const fromStub = env.ACCOUNT_ACTOR.get(fromId);
-		const toStub = env.ACCOUNT_ACTOR.get(toId);
+		const debitResult = await fromStub.sendTransfer(transactionId, toAccountId, amount);
 
-		const debitResult = await fromStub.processEntry(transactionId, -amount);
 		if (!debitResult.success) {
 			return new Response(JSON.stringify({ error: debitResult.error }), { status: 400, headers: HEADERS });
 		}
 
-		const creditResult = await toStub.processEntry(transactionId, amount);
-
-		if (!creditResult.success) {
-			await fromStub.processEntry(`${transactionId}-rollback`, amount);
-			return new Response(JSON.stringify({ error: "Transfer failed, rollback done." }), { status: 500, headers: HEADERS });
-		}
-
 		return new Response(JSON.stringify({
-			message: "Transfer done!",
+			message: "Transfer initiated successfully!",
 			transactionId,
 			fromBalance: debitResult.balance,
-		}), { headers: HEADERS });
+		}), { status: 202, headers: HEADERS });
 
 	} catch (e: any) {
 		return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: HEADERS });

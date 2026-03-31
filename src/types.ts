@@ -1,3 +1,9 @@
+export interface OutboxCreditTask {
+	toAccountId: string;
+	amount: number;
+	transactionId: string;
+}
+
 export interface LedgerEvent {
 	transactionId: string;
 	accountId: string;
@@ -18,12 +24,14 @@ export interface LoginRequest {
 }
 
 export interface TransferRequest {
+	transactionId: string;
 	fromAccountId: string;
 	toAccountId: string;
 	amount: number;
 }
 
 export interface DepositRequest {
+	transactionId: string;
 	accountId: string;
 	amount: number;
 }
