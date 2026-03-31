@@ -1,0 +1,39 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "smolbank",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-03-17",
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "ACCOUNT_ACTOR",
+				"class_name": "AccountActor"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["AccountActor"]
+		}
+	],
+	"queues": {
+		"producers": [
+			{
+				"binding": "LEDGER_QUEUE",
+				"queue": "ledger-queue"
+			}
+		],
+		"consumers": [
+			{
+				"queue": "ledger-queue",
+				"max_batch_size": 10,
+				"max_batch_timeout": 1
+			}
+		]
+	},
+
+	"observability": { "enabled": true },
+	"upload_source_maps": true,
+	"compatibility_flags": ["nodejs_compat"]
+}
