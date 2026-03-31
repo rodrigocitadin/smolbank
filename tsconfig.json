@@ -39,6 +39,12 @@
 		"types": [
 			"./worker-configuration.d.ts",
 			"node"
-		]
+		],
+
+		/* Alias for importing. */
+		"baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
 	}
 }
