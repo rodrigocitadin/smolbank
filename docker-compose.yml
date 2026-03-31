@@ -1,0 +1,11 @@
+services:
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle
+    container_name: smolbank_tigerbeetle
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./tb-data:/data
+    command: start --addresses=0.0.0.0:3000 /data/0_0.tigerbeetle
+    restart: unless-stopped
+    privileged: true
