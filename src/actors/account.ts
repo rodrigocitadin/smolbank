@@ -64,4 +64,9 @@ export class AccountActor extends DurableObject<Env> {
 		await this.env.LEDGER_QUEUE.send(event);
 		return { success: true, balance };
 	}
+
+	async getDebugState(): Promise<Record<string, any>> {
+		const allData = await this.ctx.storage.list();
+		return Object.fromEntries(allData);
+	}
 }

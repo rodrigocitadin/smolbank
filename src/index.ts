@@ -1,4 +1,4 @@
-import { handleAuth, handleTransfer } from "@/handlers";
+import { handleAuth, handleDeposit, handleTransfer } from "@/handlers";
 import { processLedgerBatch } from "@/consumers";
 import { AccountActor } from "@/actors";
 
@@ -17,12 +17,25 @@ export default {
 		}
 
 		if (request.method === "POST" && url.pathname === "/deposit") {
-			const { accountId, amount } = await request.json() as any;
+			return handleDeposit(request, env);
+		}
+
+		if (request.method === "GET" && url.pathname.startsWith("/debug/")) {
+			const accountId = url.pathname.split("/")[2];
+
+			if (!accountId) return new Response("Missing accountId", { status: 400 });
+
 			const actorNamespace = env.ACCOUNT_ACTOR as DurableObjectNamespace<AccountActor>;
 			const stub = actorNamespace.get(actorNamespace.idFromName(accountId));
 
-			const res = await stub.processEntry(crypto.randomUUID(), amount);
-			return new Response(`Depósito concluído. Saldo atual: R$ ${res.balance}`);
+			const state = await stub.getDebugState();
+
+			return new Response(JSON.stringify({
+				actorId: accountId,
+				internalStorage: state
+			}, null, 2), {
+				headers: { "Content-Type": "application/json" }
+			});
 		}
 
 		return new Response("Not Found", { status: 404 });
