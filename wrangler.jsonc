@@ -35,5 +35,9 @@
 
 	"observability": { "enabled": true },
 	"upload_source_maps": true,
-	"compatibility_flags": ["nodejs_compat"]
+	"compatibility_flags": ["nodejs_compat"],
+	
+	"vars": {
+		"JWT_SECRET": "smolbank-local-secret-key"
+	}
 }

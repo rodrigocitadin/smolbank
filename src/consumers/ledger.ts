@@ -1,4 +1,4 @@
-import { LedgerEvent } from "../types";
+import { LedgerEvent } from "@/types";
 
 export async function processLedgerBatch(batch: MessageBatch<LedgerEvent>): Promise<void> {
 	console.log(`\nBatch recieved with ${batch.messages.length} events`);

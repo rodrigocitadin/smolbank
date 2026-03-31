@@ -1,4 +1,4 @@
-import { AccountActor } from "../actors/account";
+import { AccountActor } from "@/actors";
 
 export async function handleTransfer(request: Request, env: Env): Promise<Response> {
 	try {
