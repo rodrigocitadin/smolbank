@@ -1,4 +1,4 @@
-.PHONY: help format tb-up tb-down dev clean worker-dev app-dev install
+.PHONY: help format tb-up tb-down dev-local dev-docker clean install worker-dev frontend-dev
 
 TB_DATA_FILE := tb-data/0_0.tigerbeetle
 
@@ -6,13 +6,13 @@ TB_DATA_FILE := tb-data/0_0.tigerbeetle
 
 help:
 	@echo "SmolBank - Available Commands:"
-	@echo "  make install  : Install all dependencies (Frontend and Backend)"
-	@echo "  make dev      : Start everything (TigerBeetle, Worker, and SvelteKit)"
-	@echo "  make tb-up    : Start only TigerBeetle"
-	@echo "  make clean    : Delete database and wrangler"
+	@echo "  make install     : Install dependencies locally on host"
+	@echo "  make dev-local   : Run TigerBeetle in Docker, API and App natively on host"
+	@echo "  make dev-docker  : Run EVERYTHING (TigerBeetle, API, App) inside Docker"
+	@echo "  make clean       : Delete database and Docker volumes (keeps local node_modules safe!)"
 
 install:
-	@echo "Installing Monorepo dependencies..."
+	@echo "Installing dependencies..."
 	npm install
 
 format:
@@ -24,24 +24,28 @@ format:
 
 tb-up: format
 	@echo "Starting TigerBeetle..."
-	docker compose up -d
+	docker compose up -d tigerbeetle
 
 tb-down:
-	@echo "Stopping TigerBeetle..."
-	docker compose down
+	@echo "Stopping Docker containers..."
+	docker compose down -v
 
 worker-dev:
 	cd api && npm run dev
 
-app-dev:
+frontend-dev:
 	cd app && npm run dev
 
-dev: tb-up
-	@echo "Starting Cloudflare Worker and SvelteKit 5 in parallel..."
-	@$(MAKE) -j 2 worker-dev app-dev
+dev-local: tb-up
+	@echo "Starting API and App locally..."
+	@$(MAKE) -j 2 worker-dev frontend-dev
+
+dev-docker: format
+	@echo "Starting full stack in Docker..."
+	docker compose up
 
 clean: tb-down
-	@echo "Cleaning local data..."
+	@echo "Cleaning workspace..."
 	rm -rf tb-data
 	rm -rf api/.wrangler
-	rm -rf app/.wrangler
+	rm -rf app/.svelte-kit

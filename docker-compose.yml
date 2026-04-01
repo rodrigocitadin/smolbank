@@ -1,11 +1,38 @@
 services:
   tigerbeetle:
     image: ghcr.io/tigerbeetle/tigerbeetle
-    container_name: smolbank_tigerbeetle
-    ports:
-      - "3000:3000"
     volumes:
       - ./tb-data:/data
     command: start --addresses=0.0.0.0:3000 /data/0_0.tigerbeetle
-    restart: unless-stopped
-    privileged: true
+    ports:
+      - "3000:3000"
+
+  api:
+    image: node:25-bullseye
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+      - /workspace/node_modules
+      - /workspace/api/node_modules
+    ports:
+      - "8787:8787"
+    environment:
+      - TB_ADDRESS=tigerbeetle:3000
+    command: sh -c "npm install && cd api && npm run dev"
+    depends_on:
+      - tigerbeetle
+
+  app:
+    image: node:25-bullseye
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+      - /workspace/node_modules
+      - /workspace/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - PUBLIC_API_URL=http://localhost:8787
+    command: sh -c "npm install && cd app && npm run dev"
+    depends_on:
+      - api
