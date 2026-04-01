@@ -1,5 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
-import { LedgerEvent, OutboxCreditTask } from "@/types";
+import { LedgerEvent, OutboxCreditTask, TransactionRecord } from "@/types";
 
 export class AccountActor extends DurableObject<Env> {
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -8,13 +8,9 @@ export class AccountActor extends DurableObject<Env> {
 
 	async createAccount(passwordHash: string): Promise<{ success: boolean; error?: string }> {
 		const isInitialized = await this.ctx.storage.get<boolean>("initialized");
-		if (isInitialized) { return { success: false, error: "Account already exists" } }
+		if (isInitialized) return { success: false, error: "Account already exists" };
 
-		await this.ctx.storage.put({
-			"initialized": true,
-			"balance": 0,
-			"passwordHash": passwordHash
-		});
+		await this.ctx.storage.put({ "initialized": true, "balance": 0, "passwordHash": passwordHash });
 		return { success: true };
 	}
 
@@ -23,38 +19,37 @@ export class AccountActor extends DurableObject<Env> {
 		if (!isInitialized) return { success: false, error: "Account does not exist" };
 
 		const storedHash = await this.ctx.storage.get<string>("passwordHash");
-		if (storedHash !== passwordHash) { return { success: false, error: "Invalid credentials" } }
-
+		if (storedHash !== passwordHash) return { success: false, error: "Invalid credentials" };
 		return { success: true };
 	}
 
-	async processEntry(transactionId: string, amount: number): Promise<{ success: boolean; balance: number; error?: string }> {
-		const isInitialized = await this.ctx.storage.get<boolean>("initialized");
-		if (!isInitialized) return { success: false, balance: 0, error: "Account does not exist" };
+	async getAccountInfo(cursor?: string, limit: number = 10): Promise<{ balance: number; transactions: TransactionRecord[]; nextCursor?: string }> {
+		const balance = (await this.ctx.storage.get<number>("balance")) || 0;
 
-		const txKey = `tx_${transactionId}`;
-		const alreadyProcessed = await this.ctx.storage.get(txKey);
-
-		let balance = (await this.ctx.storage.get<number>("balance")) || 0;
-
-		if (alreadyProcessed) return { success: true, balance };
-
-		if (balance + amount < 0) return { success: false, balance, error: "Insufficient balance" };
-
-		balance += amount;
-
-		await this.ctx.storage.put({ "balance": balance, [txKey]: true });
-
-		const event: LedgerEvent = {
-			transactionId,
-			accountId: this.ctx.id.toString(),
-			amount,
-			newBalance: balance,
-			timestamp: Date.now()
+		const listOptions: DurableObjectListOptions = {
+			prefix: "history_",
+			reverse: true,
+			limit: limit
 		};
 
-		await this.env.LEDGER_QUEUE.send(event);
-		return { success: true, balance };
+		if (cursor) {
+			listOptions.end = cursor;
+		}
+
+		const historyMap = await this.ctx.storage.list<TransactionRecord>(listOptions);
+		const transactions = Array.from(historyMap.values());
+		const keys = Array.from(historyMap.keys());
+
+		let nextCursor: string | undefined = undefined;
+		if (transactions.length === limit) {
+			nextCursor = keys[keys.length - 1];
+		}
+
+		return {
+			balance,
+			transactions,
+			nextCursor
+		};
 	}
 
 	async sendTransfer(transactionId: string, toAccountId: string, amount: number): Promise<{ success: boolean; balance: number; error?: string }> {
@@ -66,37 +61,38 @@ export class AccountActor extends DurableObject<Env> {
 		let balance = (await this.ctx.storage.get<number>("balance")) || 0;
 
 		if (alreadyProcessed) return { success: true, balance };
-
 		if (balance - amount < 0) return { success: false, balance, error: "Insufficient balance" };
 
 		balance -= amount;
 
+		const timestamp = Date.now();
 		const creditTaskKey = `outbox_credit_${transactionId}`;
 		const ledgerTaskKey = `outbox_ledger_${transactionId}`;
 
-		const ledgerEvent: LedgerEvent = {
-			transactionId,
-			accountId: this.ctx.id.toString(),
-			amount: -amount,
-			newBalance: balance,
-			timestamp: Date.now()
+		const historyKey = `history_${timestamp}_${transactionId}`;
+		const historyRecord: TransactionRecord = {
+			transactionId, type: 'SENT', counterparty: toAccountId, amount, timestamp, status: 'PENDING'
 		};
 
-		const creditTask: OutboxCreditTask = { toAccountId, amount, transactionId };
+		const ledgerEvent: LedgerEvent = {
+			transactionId, accountId: this.ctx.id.toString(), amount: -amount, newBalance: balance, timestamp
+		};
+
+		const creditTask: OutboxCreditTask = { toAccountId, amount, transactionId, timestamp };
 
 		await this.ctx.storage.put({
 			"balance": balance,
 			[txKey]: true,
 			[creditTaskKey]: creditTask,
-			[ledgerTaskKey]: ledgerEvent
+			[ledgerTaskKey]: ledgerEvent,
+			[historyKey]: historyRecord
 		});
 
 		await this.ctx.storage.setAlarm(Date.now() + 50);
-
 		return { success: true, balance };
 	}
 
-	async receiveCredit(transactionId: string, amount: number): Promise<{ success: boolean; fatal?: boolean; error?: string }> {
+	async receiveCredit(transactionId: string, fromAccountId: string, amount: number, isDeposit = false): Promise<{ success: boolean; fatal?: boolean; error?: string }> {
 		const isInitialized = await this.ctx.storage.get<boolean>("initialized");
 		if (!isInitialized) return { success: false, fatal: true, error: "Account not found" };
 
@@ -107,20 +103,28 @@ export class AccountActor extends DurableObject<Env> {
 		if (alreadyProcessed) return { success: true };
 
 		balance += amount;
-
+		const timestamp = Date.now();
 		const ledgerTaskKey = `outbox_ledger_${transactionId}_credit`;
-		const ledgerEvent: LedgerEvent = {
+
+		const historyKey = `history_${timestamp}_${transactionId}`;
+		const historyRecord: TransactionRecord = {
 			transactionId,
-			accountId: this.ctx.id.toString(),
-			amount: amount,
-			newBalance: balance,
-			timestamp: Date.now()
+			type: isDeposit ? 'DEPOSITED' : 'RECEIVED',
+			counterparty: fromAccountId,
+			amount,
+			timestamp,
+			status: 'COMPLETED'
+		};
+
+		const ledgerEvent: LedgerEvent = {
+			transactionId, accountId: this.ctx.id.toString(), amount, newBalance: balance, timestamp
 		};
 
 		await this.ctx.storage.put({
 			"balance": balance,
 			[txKey]: true,
-			[ledgerTaskKey]: ledgerEvent
+			[ledgerTaskKey]: ledgerEvent,
+			[historyKey]: historyRecord
 		});
 
 		await this.ctx.storage.setAlarm(Date.now() + 50);
@@ -139,19 +143,28 @@ export class AccountActor extends DurableObject<Env> {
 					await this.env.LEDGER_QUEUE.send(payload as LedgerEvent);
 					await this.ctx.storage.delete(key);
 				}
-
 				else if (key.startsWith("outbox_credit_")) {
 					const data = payload as OutboxCreditTask;
-					const actorNamespace = this.env.ACCOUNT_ACTOR as unknown as DurableObjectNamespace<AccountActor>;
+					const actorNamespace = this.env.ACCOUNT_ACTOR as DurableObjectNamespace<AccountActor>;
 					const destStub = actorNamespace.get(actorNamespace.idFromName(data.toAccountId));
 
-					const res = await destStub.receiveCredit(data.transactionId, data.amount);
+					const res = await destStub.receiveCredit(data.transactionId, this.ctx.id.toString(), data.amount);
+
+					const historyKey = `history_${data.timestamp}_${data.transactionId}`;
+					const historyRecord = await this.ctx.storage.get<TransactionRecord>(historyKey);
 
 					if (res.success) {
+						if (historyRecord) {
+							historyRecord.status = 'COMPLETED';
+							await this.ctx.storage.put(historyKey, historyRecord);
+						}
 						await this.ctx.storage.delete(key);
 					}
 					else if (res.fatal) {
-						console.error(`[DO Alarm] Dest rejected tx ${data.transactionId} (Fatal). Initiating refund...`);
+						if (historyRecord) {
+							historyRecord.status = 'REFUNDED';
+							await this.ctx.storage.put(historyKey, historyRecord);
+						}
 
 						let currentBalance = (await this.ctx.storage.get<number>("balance")) || 0;
 						currentBalance += data.amount;
@@ -165,12 +178,8 @@ export class AccountActor extends DurableObject<Env> {
 							timestamp: Date.now()
 						};
 
-						await this.ctx.storage.put({
-							"balance": currentBalance,
-							[refundLedgerKey]: refundEvent
-						});
+						await this.ctx.storage.put({ "balance": currentBalance, [refundLedgerKey]: refundEvent });
 						await this.ctx.storage.delete(key);
-
 						await this.ctx.storage.setAlarm(Date.now() + 50);
 					}
 					else {
@@ -186,10 +195,5 @@ export class AccountActor extends DurableObject<Env> {
 		if (hasTransientErrors) {
 			await this.ctx.storage.setAlarm(Date.now() + 5000);
 		}
-	}
-
-	async getDebugState(): Promise<Record<string, any>> {
-		const allData = await this.ctx.storage.list();
-		return Object.fromEntries(allData);
 	}
 }

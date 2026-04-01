@@ -12,7 +12,7 @@ export async function handleDeposit(request: Request, env: Env): Promise<Respons
 	const actorNamespace = env.ACCOUNT_ACTOR as DurableObjectNamespace<AccountActor>;
 	const stub = actorNamespace.get(actorNamespace.idFromName(body.accountId));
 
-	const res = await stub.receiveCredit(body.transactionId, body.amount);
+	const res = await stub.receiveCredit(body.transactionId, "EXTERNAL", body.amount, true);
 
 	if (!res.success) {
 		return new Response(JSON.stringify({ error: res.error }), { status: 400, headers: HEADERS });

@@ -2,6 +2,7 @@ export interface OutboxCreditTask {
 	toAccountId: string;
 	amount: number;
 	transactionId: string;
+	timestamp: number;
 }
 
 export interface LedgerEvent {
@@ -41,4 +42,17 @@ export interface TokenPayload {
 	accountId: string;
 	role: string;
 	exp?: number;
+}
+
+// Types to Frontend
+export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'REFUNDED';
+export type TransactionType = 'SENT' | 'RECEIVED' | 'DEPOSITED';
+
+export interface TransactionRecord {
+	transactionId: string;
+	type: TransactionType;
+	counterparty: string;
+	amount: number;
+	timestamp: number;
+	status: TransactionStatus;
 }
