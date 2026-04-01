@@ -34,7 +34,6 @@
 			} else {
 				isLoginMode = true;
 				password = '';
-				alert('Account created! Please sign in.');
 			}
 		} catch (err: unknown) {
 			authError = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -73,50 +72,50 @@
 </script>
 
 {#if !authState.token}
-	<div class="flex min-h-screen items-center justify-center bg-gray-50 p-6">
-		<div class="w-full max-w-sm rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-			<h2 class="mb-8 text-center text-2xl font-black tracking-tight text-gray-900">
-				{isLoginMode ? 'SmolBank' : 'Create Account'}
+	<div class="flex min-h-screen items-center justify-center bg-white p-6">
+		<div class="w-full max-w-sm">
+			<h2 class="mb-8 text-3xl font-black text-black">
+				{isLoginMode ? 'Smolbank' : 'Create Account'}
 			</h2>
 
 			{#if authError}
-				<div class="mb-6 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-600">
+				<div class="mb-8 rounded-sm bg-red-50 p-4 text-sm font-medium text-red-600">
 					{authError}
 				</div>
 			{/if}
 
 			<form onsubmit={handleAuth} class="flex flex-col gap-5">
 				<div>
-					<label class="mb-1.5 block text-sm font-semibold text-gray-700" for="accountId"
-						>Username</label
-					>
+					<label class="mb-1 block text-sm font-semibold text-gray-700" for="accountId"
+						>Username
+					</label>
 					<input
 						id="accountId"
 						type="text"
 						bind:value={accountId}
 						required
 						placeholder="e.g., yourname"
-						class="w-full rounded-xl border border-gray-200 bg-gray-50 p-3.5 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
+						class="w-full rounded-sm border border-gray-200 bg-gray-50 p-3.5 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
 					/>
 				</div>
 				<div>
-					<label class="mb-1.5 block text-sm font-semibold text-gray-700" for="password"
-						>Password</label
-					>
+					<label class="mb-1 block text-sm font-semibold text-gray-700" for="password">
+						Password
+					</label>
 					<input
 						id="password"
 						type="password"
 						bind:value={password}
 						required
 						placeholder="••••••••"
-						class="w-full rounded-xl border border-gray-200 bg-gray-50 p-3.5 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
+						class="w-full rounded-sm border border-gray-200 bg-gray-50 p-3.5 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
 					/>
 				</div>
 
 				<button
 					type="submit"
 					disabled={isAuthLoading}
-					class="mt-2 w-full rounded-xl bg-black p-4 font-bold text-white transition-transform active:scale-[0.98] disabled:opacity-50"
+					class="mt-2 w-full rounded-sm bg-black p-4 font-bold text-white transition-transform active:scale-[0.98] disabled:opacity-50"
 				>
 					{isAuthLoading ? 'Processing...' : isLoginMode ? 'Sign In' : 'Sign Up'}
 				</button>
@@ -146,47 +145,39 @@
 			<div class="flex flex-col gap-3">
 				{#each transactions as tx (tx.transactionId)}
 					<div
-						class="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+						class="flex items-center justify-between rounded-sm border border-gray-200 p-4 transition-colors
+							{tx.status === 'REFUNDED' && 'bg-gray-100 opacity-75'}"
 					>
-						<div class="flex items-center gap-4">
-							<div
-								class="flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold {tx.type ===
-								'SEND'
-									? 'bg-red-50 text-red-500'
-									: 'bg-green-50 text-green-500'}"
+						<div class="flex flex-col">
+							<p
+								class="leading-tight font-bold {tx.status === 'REFUNDED'
+									? 'text-gray-600'
+									: 'text-gray-900'}"
 							>
-								{tx.type === 'SEND' ? '↑' : '↓'}
-							</div>
-							<div>
-								<p class="leading-tight font-bold text-gray-900">
-									{tx.type === 'DEPOSIT'
-										? 'Deposit'
-										: tx.counterparty === 'EXTERNAL'
-											? 'System'
-											: `@${tx.counterparty}`}
-								</p>
-								<p class="mt-0.5 text-xs font-medium text-gray-400">
-									{new Date(tx.timestamp).toLocaleTimeString([], {
-										hour: '2-digit',
-										minute: '2-digit'
-									})}
-									• {new Date(tx.timestamp).toLocaleDateString()}
-								</p>
-								{#if tx.status !== 'COMPLETED'}
-									<p
-										class="mt-1 text-xs font-bold {tx.status === 'PENDING'
-											? 'text-yellow-500'
-											: 'text-red-500'}"
-									>
-										{tx.status}
-									</p>
-								{/if}
-							</div>
+								{tx.type === 'DEPOSITED' ? 'Deposit' : `@${tx.counterparty}`}
+							</p>
+							<p class="mt-1 text-xs font-medium text-gray-500">
+								{new Date(tx.timestamp).toLocaleTimeString([], {
+									hour: '2-digit',
+									minute: '2-digit'
+								})}
+								• {new Date(tx.timestamp).toLocaleDateString([], {
+									day: '2-digit',
+									month: '2-digit',
+									year: '2-digit'
+								})}
+							</p>
 						</div>
+
 						<div
-							class="text-lg font-black {tx.type === 'SEND' ? 'text-gray-900' : 'text-green-500'}"
+							class="text-lg font-extrabold {tx.status === 'REFUNDED'
+								? 'text-gray-400 line-through'
+								: tx.type === 'SENT'
+									? 'text-red-600'
+									: 'text-green-600'}"
 						>
-							{tx.type === 'SEND' ? '-' : '+'} ${tx.amount.toFixed(2)}
+							{tx.status != 'REFUNDED' ? (tx.type === 'SENT' ? '-' : '+') : null}
+							${tx.amount.toFixed(2)}
 						</div>
 					</div>
 				{/each}

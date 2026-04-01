@@ -1,5 +1,5 @@
 export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'REFUNDED';
-export type TransactionType = 'SEND' | 'RECEIVE' | 'DEPOSIT';
+export type TransactionType = 'SENT' | 'RECEIVED' | 'DEPOSITED';
 
 export interface TransactionRecord {
 	transactionId: string;
