@@ -1,11 +1,19 @@
 import { handleAuth, handleDeposit, handleGetAccountInfo, handleTransfer } from "@/handlers";
 import { processLedgerBatch } from "@/consumers";
 import { AccountActor } from "@/actors";
+import { HEADERS } from "@/consts";
 
 export { AccountActor };
 
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+		if (request.method === "OPTIONS") {
+			return new Response(null, {
+				status: 204,
+				headers: HEADERS
+			});
+		}
+
 		const url = new URL(request.url);
 
 		if (request.method === "GET" && url.pathname === "/account") {

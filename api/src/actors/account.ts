@@ -52,7 +52,7 @@ export class AccountActor extends DurableObject<Env> {
 		};
 	}
 
-	async sendTransfer(transactionId: string, toAccountId: string, amount: number): Promise<{ success: boolean; balance: number; error?: string }> {
+	async sendTransfer(transactionId: string, toAccountId: string, amount: number, fromAccountId: string): Promise<{ success: boolean; balance: number; error?: string }> {
 		const isInitialized = await this.ctx.storage.get<boolean>("initialized");
 		if (!isInitialized) return { success: false, balance: 0, error: "Account does not exist" };
 
@@ -78,7 +78,7 @@ export class AccountActor extends DurableObject<Env> {
 			transactionId, accountId: this.ctx.id.toString(), amount: -amount, newBalance: balance, timestamp
 		};
 
-		const creditTask: OutboxCreditTask = { toAccountId, amount, transactionId, timestamp };
+		const creditTask: OutboxCreditTask = { toAccountId, amount, transactionId, timestamp, fromAccountId };
 
 		await this.ctx.storage.put({
 			"balance": balance,
@@ -148,7 +148,7 @@ export class AccountActor extends DurableObject<Env> {
 					const actorNamespace = this.env.ACCOUNT_ACTOR as DurableObjectNamespace<AccountActor>;
 					const destStub = actorNamespace.get(actorNamespace.idFromName(data.toAccountId));
 
-					const res = await destStub.receiveCredit(data.transactionId, this.ctx.id.toString(), data.amount);
+					const res = await destStub.receiveCredit(data.transactionId, data.fromAccountId, data.amount);
 
 					const historyKey = `history_${data.timestamp}_${data.transactionId}`;
 					const historyRecord = await this.ctx.storage.get<TransactionRecord>(historyKey);

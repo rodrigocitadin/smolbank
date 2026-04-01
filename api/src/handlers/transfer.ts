@@ -35,7 +35,7 @@ export async function handleTransfer(request: Request, env: Env): Promise<Respon
 		const fromId = actorNamespace.idFromName(fromAccountId);
 		const fromStub = actorNamespace.get(fromId);
 
-		const debitResult = await fromStub.sendTransfer(transactionId, toAccountId, amount);
+		const debitResult = await fromStub.sendTransfer(transactionId, toAccountId, amount, fromAccountId);
 
 		if (!debitResult.success) {
 			return new Response(JSON.stringify({ error: debitResult.error }), { status: 400, headers: HEADERS });

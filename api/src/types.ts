@@ -3,6 +3,7 @@ export interface OutboxCreditTask {
 	amount: number;
 	transactionId: string;
 	timestamp: number;
+	fromAccountId: string;
 }
 
 export interface LedgerEvent {
