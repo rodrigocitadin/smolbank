@@ -3,5 +3,15 @@
 	"name": "app",
 	"compatibility_date": "2026-04-01",
 	"compatibility_flags": ["nodejs_als"],
-	"pages_build_output_dir": ".svelte-kit/cloudflare"
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"vars": {
+		"PUBLIC_API_URL": "http://localhost:8787"
+	},
+	"env": {
+		"preview": {
+			"vars": {
+				"PUBLIC_API_URL": "http://localhost:8787"
+			}
+		}
+	}
 }
