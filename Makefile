@@ -1,42 +1,47 @@
-.PHONY: help format tb-up tb-down dev clean
+.PHONY: help format tb-up tb-down dev clean worker-dev app-dev install
 
 TB_DATA_FILE := tb-data/0_0.tigerbeetle
 
 .DEFAULT_GOAL := help
 
 help:
-	@echo "Smolbank - Available Commands:"
-	@echo "------------------------------------------------------------"
-	@echo " make dev: 	Initializes everything (TB + CF Worker)"
-	@echo " make tb-up: 	Starts only TigerBeetle in the background"
-	@echo " make tb-down: 	Shuts down the TigerBeetle container"
-	@echo " make clean: 	Deletes the database and local state"
-	@echo " make format: 	Formats the TB disk (internal use)"
-	@echo "------------------------------------------------------------"
+	@echo "SmolBank - Available Commands:"
+	@echo "  make install  : Install all dependencies (Frontend and Backend)"
+	@echo "  make dev      : Start everything (TigerBeetle, Worker, and SvelteKit)"
+	@echo "  make tb-up    : Start only TigerBeetle"
+	@echo "  make clean    : Delete database and wrangler"
+
+install:
+	@echo "Installing Monorepo dependencies..."
+	npm install
 
 format:
 	@if [ ! -f $(TB_DATA_FILE) ]; then \
-		echo "Formatting TigerBeetle's volume for the first time..."; \
+		echo "Formatting TigerBeetle volume..."; \
 		mkdir -p tb-data; \
 		docker run --rm --privileged -v $$(pwd)/tb-data:/data ghcr.io/tigerbeetle/tigerbeetle format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle; \
-	else \
-		echo "The TigerBeetle volume already exists. Skipping formatting."; \
 	fi
 
 tb-up: format
-	@echo "Starting TigerBeetle via Docker Compose..."
-	docker-compose up -d
+	@echo "Starting TigerBeetle..."
+	docker compose up -d
 
 tb-down:
-	@echo "Taking down TigerBeetle..."
-	docker-compose down
+	@echo "Stopping TigerBeetle..."
+	docker compose down
+
+worker-dev:
+	cd api && npm run dev
+
+app-dev:
+	cd app && npm run dev
 
 dev: tb-up
-	@echo "Starting Cloudflare Worker..."
-	npm run dev
+	@echo "Starting Cloudflare Worker and SvelteKit 5 in parallel..."
+	@$(MAKE) -j 2 worker-dev app-dev
 
 clean: tb-down
-	@echo "Clearing local data (TigerBeetle and Wrangler SQLite)..."
+	@echo "Cleaning local data..."
 	rm -rf tb-data
-	rm -rf .wrangler
-	@echo "Everything clean!"
+	rm -rf api/.wrangler
+	rm -rf app/.wrangler

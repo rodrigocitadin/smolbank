@@ -1,0 +1,8 @@
+{
+  "name": "smolbank-monorepo",
+  "private": true,
+  "workspaces": [
+    "api",
+    "app"
+  ]
+}
