@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { authState } from '$lib/auth.svelte';
+	import { uiState } from '$lib/ui.svelte';
 	import { env } from '$env/dynamic/public';
 	import type { TransactionRecord, DashboardResponse } from '$lib/types';
 
 	let isLoginMode = $state<boolean>(true);
 	let accountId = $state<string>('');
 	let password = $state<string>('');
-	let authError = $state<string>('');
 	let isAuthLoading = $state<boolean>(false);
 
 	let transactions = $state<TransactionRecord[]>([]);
 	let isDashLoading = $state<boolean>(false);
 
+	let nextCursor = $state<number | undefined>(undefined);
+	let isLoadingMore = $state<boolean>(false);
+
 	async function handleAuth(e: Event) {
 		e.preventDefault();
-		authError = '';
 		isAuthLoading = true;
 		const endpoint = isLoginMode ? '/login' : '/account';
 
@@ -24,6 +26,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ accountId, password })
 			});
+
 			const data = await res.json();
 
 			if (!res.ok) throw new Error(data.error || 'Request failed');
@@ -31,36 +34,61 @@
 			if (isLoginMode) {
 				authState.login(data.token, accountId);
 				await fetchDashboard();
+				uiState.showToast('Successfully logged in!', 'success');
 			} else {
 				isLoginMode = true;
 				password = '';
+				uiState.showToast('Account created! Please sign in.', 'success');
 			}
 		} catch (err: unknown) {
-			authError = err instanceof Error ? err.message : 'An unknown error occurred';
+			uiState.showToast(err instanceof Error ? err.message : 'An unknown error occurred', 'error');
 		} finally {
 			isAuthLoading = false;
 		}
 	}
 
-	async function fetchDashboard() {
+	async function fetchDashboard(cursor?: number) {
 		if (!authState.token) return;
-		isDashLoading = true;
+
+		if (cursor) isLoadingMore = true;
+		else isDashLoading = true;
+
 		try {
-			const res = await fetch(`${env.PUBLIC_API_URL}/account`, {
+			const url = cursor
+				? `${env.PUBLIC_API_URL}/account?cursor=${cursor}`
+				: `${env.PUBLIC_API_URL}/account`;
+
+			const res = await fetch(url, {
 				headers: { Authorization: `Bearer ${authState.token}` }
 			});
-			const data = (await res.json()) as DashboardResponse;
+
+			if (res.status === 401) {
+				authState.logout();
+				uiState.showToast('Session expired. Please log in again.', 'error');
+				return;
+			}
+
+			const data = await res.json();
 
 			if (res.ok) {
-				authState.setBalance(data.balance);
-				transactions = data.transactions || [];
-			} else if (res.status === 401) {
-				authState.logout();
+				const dashData = data as DashboardResponse;
+				authState.setBalance(dashData.balance);
+
+				if (cursor) {
+					transactions = [...transactions, ...(dashData.transactions || [])];
+				} else {
+					transactions = dashData.transactions || [];
+				}
+				nextCursor = dashData.nextCursor;
+			} else {
+				const errorData = data as { error?: string };
+				throw new Error(errorData.error || 'Failed to load dashboard');
 			}
-		} catch (e) {
-			console.error('Failed to fetch dashboard:', e);
+		} catch (e: unknown) {
+			uiState.showToast(e instanceof Error ? e.message : 'Connection error', 'error');
 		} finally {
 			isDashLoading = false;
+			isLoadingMore = false;
 		}
 	}
 
@@ -78,17 +106,11 @@
 				{isLoginMode ? 'Smolbank' : 'Create Account'}
 			</h2>
 
-			{#if authError}
-				<div class="mb-8 rounded-sm bg-red-50 p-4 text-sm font-medium text-red-600">
-					{authError}
-				</div>
-			{/if}
-
 			<form onsubmit={handleAuth} class="flex flex-col gap-5">
 				<div>
 					<label class="mb-1 block text-sm font-semibold text-gray-700" for="accountId"
-						>Username
-					</label>
+						>Username</label
+					>
 					<input
 						id="accountId"
 						type="text"
@@ -99,9 +121,9 @@
 					/>
 				</div>
 				<div>
-					<label class="mb-1 block text-sm font-semibold text-gray-700" for="password">
-						Password
-					</label>
+					<label class="mb-1 block text-sm font-semibold text-gray-700" for="password"
+						>Password</label
+					>
 					<input
 						id="password"
 						type="password"
@@ -131,7 +153,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col gap-4 pb-10">
-		<h2 class="text-sm font-bold tracking-wider text-gray-500 uppercase mb-4">Recent Activity</h2>
+		<h2 class="mb-4 text-sm font-bold tracking-wider text-gray-500 uppercase">Recent Activity</h2>
 
 		{#if isDashLoading}
 			<div class="py-10 text-center font-medium text-gray-400">Syncing...</div>
@@ -146,7 +168,7 @@
 				{#each transactions as tx (tx.transactionId)}
 					<div
 						class="flex items-center justify-between rounded-sm border border-gray-200 p-4 transition-colors
-							{tx.status === 'REFUNDED' && 'bg-gray-100 opacity-75'}"
+						{tx.status === 'REFUNDED' && 'bg-gray-100 opacity-75'}"
 					>
 						<div class="flex flex-col">
 							<p
@@ -154,7 +176,11 @@
 									? 'text-gray-600'
 									: 'text-gray-900'}"
 							>
-								{tx.type === 'DEPOSITED' ? 'Deposit' : `@${tx.counterparty}`}
+								{tx.type === 'DEPOSITED'
+									? 'Deposit'
+									: tx.counterparty === 'EXTERNAL'
+										? 'System'
+										: `@${tx.counterparty}`}
 							</p>
 							<p class="mt-1 text-xs font-medium text-gray-500">
 								{new Date(tx.timestamp).toLocaleTimeString([], {
@@ -169,18 +195,38 @@
 							</p>
 						</div>
 
-						<div
-							class="text-lg font-extrabold {tx.status === 'REFUNDED'
-								? 'text-gray-400 line-through'
-								: tx.type === 'SENT'
-									? 'text-red-600'
-									: 'text-green-600'}"
-						>
-							{tx.status != 'REFUNDED' ? (tx.type === 'SENT' ? '-' : '+') : null}
-							${tx.amount.toFixed(2)}
+						<div class="flex flex-col items-end">
+							<p
+								class="text-lg font-extrabold {tx.status === 'REFUNDED'
+									? 'text-gray-400 line-through'
+									: tx.type === 'SENT'
+										? 'text-red-600'
+										: 'text-green-600'}"
+							>
+								{tx.status !== 'REFUNDED' ? (tx.type === 'SENT' ? '-' : '+') : null}
+								${tx.amount.toFixed(2)}
+							</p>
+
+							<p
+								class="mt-1 text-xs font-bold {tx.status === 'PENDING'
+									? 'text-yellow-600'
+									: 'text-gray-500'}"
+							>
+								{tx.status}
+							</p>
 						</div>
 					</div>
 				{/each}
+
+				{#if nextCursor}
+					<button
+						onclick={() => fetchDashboard(nextCursor)}
+						disabled={isLoadingMore}
+						class="mt-2 w-full rounded-sm bg-gray-100 py-3 text-sm font-bold text-gray-600 transition hover:bg-gray-200 active:scale-[0.99] disabled:opacity-50"
+					>
+						{isLoadingMore ? 'Loading...' : 'Load More'}
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</div>

@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { authState } from '$lib/auth.svelte';
+	import { uiState } from '$lib/ui.svelte';
 	import { env } from '$env/dynamic/public';
-	import type { MsgState } from '$lib/types';
 
 	let toAccountId = $state<string>('');
 	let amount = $state<string>('');
-	let msg = $state<MsgState>({ text: '', error: false });
 	let isSubmitting = $state<boolean>(false);
 
 	async function handleTransfer(e: Event) {
 		e.preventDefault();
 		isSubmitting = true;
-		msg = { text: '', error: false };
 
 		try {
 			const res = await fetch(`${env.PUBLIC_API_URL}/transfer`, {
@@ -28,10 +26,16 @@
 				})
 			});
 
+			if (res.status === 401) {
+				authState.logout();
+				uiState.showToast('Session expired. Please log in again.', 'error');
+				return;
+			}
+
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error || 'Transfer failed');
 
-			msg = { text: 'Transfer successfully initiated!', error: false };
+			uiState.showToast('Transfer successfully initiated!', 'success');
 			toAccountId = '';
 			amount = '';
 
@@ -39,7 +43,7 @@
 				authState.setBalance(data.fromBalance);
 			}
 		} catch (err: unknown) {
-			msg = { text: err instanceof Error ? err.message : 'Unknown error', error: true };
+			uiState.showToast(err instanceof Error ? err.message : 'Unknown error', 'error');
 		} finally {
 			isSubmitting = false;
 		}
@@ -48,16 +52,6 @@
 
 <div class="flex flex-col gap-4 pb-10">
 	<h2 class="text-sm font-bold tracking-wider text-gray-500 uppercase">Send Money</h2>
-
-	<!-- {#if msg.text} -->
-	<!-- 	<div -->
-	<!-- 		class="mb-6 rounded-xl p-4 text-sm font-bold {msg.error -->
-	<!-- 			? 'bg-red-50 text-red-600' -->
-	<!-- 			: 'bg-green-50 text-green-600'}" -->
-	<!-- 	> -->
-	<!-- 		{msg.text} -->
-	<!-- 	</div> -->
-	<!-- {/if} -->
 
 	<form onsubmit={handleTransfer} class="mt-4 flex flex-col gap-3">
 		<div>

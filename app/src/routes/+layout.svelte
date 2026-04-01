@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import { authState } from '$lib/auth.svelte';
+	import { uiState } from '$lib/ui.svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
@@ -19,7 +20,6 @@
 				<span class="text-sm font-medium text-gray-500">@{authState.accountId}</span>
 				<span class="text-2xl font-bold text-black">${authState.balance.toFixed(2)}</span>
 			</div>
-
 			<button
 				onclick={() => authState.logout()}
 				class="rounded-sm bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition active:bg-red-100"
@@ -33,33 +33,38 @@
 				href={resolve('/')}
 				class="rounded-sm px-5 py-3 text-sm font-semibold transition {page.url.pathname === '/'
 					? 'bg-black text-white'
-					: 'bg-gray-100 text-black'}"
+					: 'bg-gray-100 text-black'}">Dashboard</a
 			>
-				Dashboard
-			</a>
 			<a
 				href={resolve('/transfer')}
 				class="rounded-sm px-5 py-3 text-sm font-semibold transition {page.url.pathname ===
 				'/transfer'
 					? 'bg-black text-white'
-					: 'bg-gray-100 text-black'}"
+					: 'bg-gray-100 text-black'}">Transfer</a
 			>
-				Transfer
-			</a>
 			<a
 				href={resolve('/deposit')}
 				class="rounded-sm px-5 py-3 text-sm font-semibold transition {page.url.pathname ===
 				'/deposit'
 					? 'bg-black text-white'
-					: 'bg-gray-100 text-black'}"
+					: 'bg-gray-100 text-black'}">Deposit</a
 			>
-				Deposit
-			</a>
 		</nav>
 
 		<main class="flex-1 overflow-y-auto p-4">
 			{@render children()}
 		</main>
+	</div>
+{/if}
+
+{#if uiState.toast}
+	<div
+		class="fixed right-5 bottom-5 z-50 min-w-62.5 rounded-sm border p-4 shadow-lg transition-all
+		{uiState.toast.type === 'error'
+			? 'border-red-200 bg-red-50 text-red-600'
+			: 'border-green-200 bg-green-50 text-green-600'}"
+	>
+		<p class="text-sm font-bold">{uiState.toast.message}</p>
 	</div>
 {/if}
 
