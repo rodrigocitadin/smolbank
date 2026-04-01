@@ -131,7 +131,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col gap-4 pb-10">
-		<h2 class="px-1 text-sm font-bold tracking-wider text-gray-500 uppercase">Recent Activity</h2>
+		<h2 class="text-sm font-bold tracking-wider text-gray-500 uppercase mb-4">Recent Activity</h2>
 
 		{#if isDashLoading}
 			<div class="py-10 text-center font-medium text-gray-400">Syncing...</div>

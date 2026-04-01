@@ -46,40 +46,40 @@
 	}
 </script>
 
-<div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-	<h2 class="mb-6 text-xl font-black text-gray-900">Send Money</h2>
+<div class="flex flex-col gap-4 pb-10">
+	<h2 class="text-sm font-bold tracking-wider text-gray-500 uppercase">Send Money</h2>
 
-	{#if msg.text}
-		<div
-			class="mb-6 rounded-xl p-4 text-sm font-bold {msg.error
-				? 'bg-red-50 text-red-600'
-				: 'bg-green-50 text-green-600'}"
-		>
-			{msg.text}
-		</div>
-	{/if}
+	<!-- {#if msg.text} -->
+	<!-- 	<div -->
+	<!-- 		class="mb-6 rounded-xl p-4 text-sm font-bold {msg.error -->
+	<!-- 			? 'bg-red-50 text-red-600' -->
+	<!-- 			: 'bg-green-50 text-green-600'}" -->
+	<!-- 	> -->
+	<!-- 		{msg.text} -->
+	<!-- 	</div> -->
+	<!-- {/if} -->
 
-	<form onsubmit={handleTransfer} class="flex flex-col gap-5">
+	<form onsubmit={handleTransfer} class="mt-4 flex flex-col gap-3">
 		<div>
-			<label class="mb-1.5 block text-sm font-semibold text-gray-700" for="toAccountId"
+			<label class="mb-1 block text-sm font-semibold text-gray-700" for="toAccountId"
 				>Recipient Username</label
 			>
 			<div class="relative">
-				<span class="absolute top-3.5 left-4 font-bold text-gray-400">@</span>
+				<span class="absolute top-3 left-4 font-bold text-gray-400">@</span>
 				<input
 					id="toAccountId"
 					type="text"
 					bind:value={toAccountId}
 					required
 					placeholder="username"
-					class="w-full rounded-xl border border-gray-200 bg-gray-50 p-3.5 pl-9 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
+					class="w-full rounded-sm border border-gray-200 bg-gray-50 p-3 pl-9 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
 				/>
 			</div>
 		</div>
 		<div>
-			<label class="mb-1.5 block text-sm font-semibold text-gray-700" for="amount">Amount</label>
+			<label class="mb-1 block text-sm font-semibold text-gray-700" for="amount">Amount</label>
 			<div class="relative">
-				<span class="absolute top-3.5 left-4 font-bold text-gray-400">$</span>
+				<span class="absolute top-3 left-4 font-bold text-gray-400">$</span>
 				<input
 					id="amount"
 					type="number"
@@ -88,7 +88,7 @@
 					min="0.01"
 					step="0.01"
 					placeholder="0.00"
-					class="w-full rounded-xl border border-gray-200 bg-gray-50 p-3.5 pl-11 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
+					class="w-full rounded-sm border border-gray-200 bg-gray-50 p-3 pl-9 transition outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black"
 				/>
 			</div>
 		</div>
@@ -96,7 +96,7 @@
 		<button
 			type="submit"
 			disabled={isSubmitting}
-			class="mt-4 w-full rounded-xl bg-black p-4 font-bold text-white transition-transform active:scale-[0.98] disabled:opacity-50"
+			class="mt-4 w-full rounded-sm bg-black p-4 font-bold text-white transition-transform active:scale-[0.98] disabled:opacity-50"
 		>
 			{isSubmitting ? 'Sending...' : 'Send'}
 		</button>
